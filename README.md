@@ -1,4 +1,4 @@
-# MultiDST:Python library based on statistical methods that facilitates a user to decide on a “cutoff threshold of significance” or “critical significance threshold” for a dataset with large number of p-values
+# MultiDST: Python library based on statistical methods that facilitates a user to decide on a “cutoff threshold of significance” or “critical significance threshold” for a dataset with large number of p-values
 
 Research Question:
 How can the already available correction methods be improved to provide a solution of a “data
