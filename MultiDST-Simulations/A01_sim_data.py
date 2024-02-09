@@ -1,7 +1,7 @@
-
+# Simulating from Independent samples t-test
 def simulation_01(seed,num_firing,num_nonfire,threshold=0.05,show_plot=False):
     '''
-    This is from t-distribution & uniform
+    This is to create p-values from t-distribution & uniform distribution
     '''
     import numpy as np
     import seaborn as sns
