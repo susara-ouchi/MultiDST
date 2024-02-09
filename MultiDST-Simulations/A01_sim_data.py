@@ -1,4 +1,8 @@
 # Simulating from Independent samples t-test
+
+#Hypothesis:
+#  H0: p-values come from the same distribution 
+#  H1: p-values comes from two different distributions
 def simulation_01(seed,num_firing,num_nonfire,threshold=0.05,show_plot=False):
     '''
     This is to create p-values from t-distribution & uniform distribution
@@ -10,6 +14,7 @@ def simulation_01(seed,num_firing,num_nonfire,threshold=0.05,show_plot=False):
     import matplotlib.pyplot as plt
 
     ############################### Simulating t-test (independent samples) ########################################3
+
     np.random.seed(seed)
 
     #Control Group Distribution
@@ -18,7 +23,7 @@ def simulation_01(seed,num_firing,num_nonfire,threshold=0.05,show_plot=False):
     n0 = 100
 
     #Treatment Group Distribution
-    m1 = 0.05
+    m1 = 0.2
     s1 = 1
     n1 = 100
 
