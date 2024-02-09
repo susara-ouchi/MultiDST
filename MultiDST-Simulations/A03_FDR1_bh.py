@@ -27,10 +27,21 @@ def bh_method(p_values, alpha=0.05, weights = True):
         # Sort the p-values along with their original indices
         sorted_p_values_with_indices = sorted(enumerate(p_values), key=lambda x: x[1])
         n = len(p_values)
-        # BH Adjusted p-values with original ordering
-        adj_p_sorted = [[i, ind,min(p_val*n/(i+1),1.0)] for i,(ind,p_val) in enumerate(sorted_p_values_with_indices)]
-        bh_adj_p = [sublist[2] for sublist in adj_p_sorted]
-        return bh_adj_p
+        # Calculate BH critical value for each index
+        bh_values = [p_value * n / (i + 1) for i, (index, p_value) in enumerate(sorted_p_values_with_indices)]
+
+        # Find the largest index where p_value <= BH critical value
+        max_significant_index = max(i for i, bh_value in enumerate(bh_values) if bh_value <= alpha)
+
+        # Initialize adjusted p-values with original ordering
+        adj_p_values = [min(p_value * n / (i + 1), 1.0) for i, p_value in enumerate(p_values)]
+
+        # Adjust only the significant p-values
+        for i in range(max_significant_index + 1):
+            index = sorted_p_values_with_indices[i][0]
+            adj_p_values[index] = min(adj_p_values[index], alpha)
+
+        return adj_p_values
 
     m = len(p_values)
     if weights == True:
@@ -54,35 +65,3 @@ bh_w_p, bh_w_sig_index = bh_test[0], bh_test[1]
 
 bh_p
 
-
-
-def sim_eval(p_values, fire_index, nonfire_index, adj_p, sig_index, threshold =0.05):
-    import pandas as pd
-    significant_p = [p_values[index] for index in sig_index]
-    significant_p_fire = [adj_p[index] for index in fire_index if adj_p[index] < threshold]
-    significant_p_nonfire = [adj_p[index] for index in
-     nonfire_index if adj_p[index] < threshold]
- 
-    # Confusion Matrix
-    TP = len(significant_p_fire)
-    FP = len(significant_p_nonfire)
-    TN = len(nonfire_index) - FP
-    FN = len(fire_index) - TP
-
-    data = {
-        'Actual Positive': [TP, FN],
-        'Actual Negative': [FP, TN],
-    }
-    confusion_matrix = pd.DataFrame(data, index=['Predicted Positive', 'Predicted Negative'])
-    confusion_matrix
-
-    sig_p= len(significant_p)
-    power = TP/(TP+FN)
-    power
-        
-    #To find which genes are significant
-    TP_index = [index for index in fire_index if adj_p[index] < threshold]
-    FN_index = [index for index in fire_index if adj_p[index] >= threshold]
-    FP_index = [index for index in nonfire_index if adj_p[index] < threshold]
-    TN_index = [index for index in nonfire_index if adj_p[index] >= threshold]
-    return power, confusion_matrix,TP_index

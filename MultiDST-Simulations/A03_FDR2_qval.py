@@ -10,7 +10,7 @@ from A01_sim_data import p_values, fire_index, nonfire_index
 from A01_weighting import weighted_p
 
 # Function to calculate adjusted q_values
-def q_adj(p_values, m=None, verbose=False, pi0=None):
+def q_adj(p_values, m=None, verbose=True, pi0=None):
     """
     Estimates q-values from p-values
 
@@ -27,9 +27,8 @@ def q_adj(p_values, m=None, verbose=False, pi0=None):
     pi0: float or None, optional
         If None, it's estimated as suggested in Storey and Tibshirani, 2003.
         For most GWAS this is not necessary, since pi0 is extremely likely to be 1.
-
     """
-    assert(all(0 <= p <= 1 for p in p_values)), "p-values should be between 0 and 1"
+    #assert(all(0 <= p <= 1 for p in p_values)), "p-values should be between 0 and 1"
 
     if m is None:
         m = float(len(p_values))
@@ -98,9 +97,8 @@ def q_value(p_values, alpha=0.05, weights = True):
 
         adj_p = q_adj(p_values)
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
-
     else:
-        # Šidák correction
+        # Q value correction
         adj_p = q_adj(p_values)
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
 
@@ -116,3 +114,4 @@ q_val = q_value(p_values,alpha=0.05, weights = True)
 storey_q_w, q_w_sig_index = q_val[0], q_val[1]
 
 storey_q
+q_sig_index
