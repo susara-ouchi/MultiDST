@@ -11,10 +11,10 @@ from A03_FDR2_qval import storey_q,q_sig_index
 
 def sim_eval(p_values, fire_index, nonfire_index, adj_p, sig_index, threshold =0.05):
     import pandas as pd
+    import numpy as np
     significant_p = [p_values[index] for index in sig_index]
     significant_p_fire = [adj_p[index] for index in fire_index if adj_p[index] < threshold]
-    significant_p_nonfire = [adj_p[index] for index in
-     nonfire_index if adj_p[index] < threshold]
+    significant_p_nonfire = [adj_p[index] for index in nonfire_index if adj_p[index] < threshold]
  
     # Confusion Matrix
     TP = len(significant_p_fire)
@@ -41,14 +41,14 @@ def sim_eval(p_values, fire_index, nonfire_index, adj_p, sig_index, threshold =0
     FN_index = [index for index in fire_index if adj_p[index] >= threshold]
     FP_index = [index for index in nonfire_index if adj_p[index] < threshold]
     TN_index = [index for index in nonfire_index if adj_p[index] >= threshold]
-    return sensitivity,specificity, balanced_accuracy, f1_score, confusion_matrix,TP_index
+    return sensitivity,specificity, balanced_accuracy, f1_score, confusion_matrix,significant_p_fire
 
 #Getting Evaluation Results
 corr_method = ["Uncorrected","Bonferroni","Weighted Bonf","Sidak","Weighted Sidak","Holm","Weighted Holm","Simes","Weighted Simes", "BH method","Weighted BH (Genovese) Method","Q-value"]
 adj_p_list = [p_values, bonf_p, bonf_w_p,sidak_p,sidak_w_p,holm_p,holm_w_p,simes_p, simes_w_p,bh_p,bh_w_p,storey_q]
 sig_index_list = [significant_p,bonf_sig_index, bonf_w_sig_index,sidak_sig_index, sidak_w_sig_index,holm_sig_index,holm_w_sig_index,simes_sig_index, simes_w_sig_index,bh_sig_index,bh_w_sig_index,q_sig_index]
 sim_results = sim_eval(p_values, fire_index, nonfire_index, adj_p_list[0], sig_index_list[0], threshold =0.05)
-sim_results
+#len(sim_results[5])
 
 for i in range(len(corr_method)):
     print(f"\n* Results for {corr_method[i]}:\n")
@@ -57,7 +57,9 @@ for i in range(len(corr_method)):
     sim_specificity = sim_results[1]
     balanced_accuracy = sim_results[2]
     f1_score = sim_results[3]
-    print(f"Sensitivity: {sim_sensitivity}\nSpecificity: {sim_specificity}\nBalanced Accuracy: {balanced_accuracy}\nF1-score: {f1_score}")
+    print(f"Sensitivity: {sim_sensitivity}\nSpecificty: {sim_specificity}\nBalanced Accuracy: {balanced_accuracy}\nF1-score: {f1_score}")
     conf_sim = sim_results[4]
     conf_sim
     print("====================================================")
+
+
