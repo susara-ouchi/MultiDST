@@ -9,7 +9,6 @@ def simulation_01(seed,num_firing,num_nonfire,threshold=0.05,show_plot=False):
     This is to create p-values from t-distribution & uniform distribution
     '''
     import numpy as np
-    import seaborn as sns
     import pandas as pd
     import statsmodels.api as sm
     import matplotlib.pyplot as plt
@@ -29,7 +28,7 @@ def simulation_01(seed,num_firing,num_nonfire,threshold=0.05,show_plot=False):
     n1 = 100
 
     p_value_fire = []
-    p_value_nonfire = []
+    p_value_nonfire = [] 
 
     for i in range(num_firing):
         control_group = np.random.normal(m0,s0,size =n0)
@@ -63,6 +62,6 @@ def simulation_01(seed,num_firing,num_nonfire,threshold=0.05,show_plot=False):
     return p_values, significant_p, fire_index, nonfire_index
 
 #Simulating Dataset for 500 F and 9500 NF 
-sim1 = simulation_01(42,9500,500,threshold=0.05,show_plot=True)
+sim1 = simulation_01(42,9500,500,threshold=0.05,show_plot=False)
 p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
 
