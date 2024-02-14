@@ -8,6 +8,7 @@ from A02_FWER3_holm import holm_p,holm_sig_index,holm_w_p,holm_w_sig_index
 from A02_FWER4_simes import simes_p,simes_sig_index,simes_w_p,simes_w_sig_index
 from A03_FDR1_bh import bh_p,bh_sig_index,bh_w_p,bh_w_sig_index
 from A03_FDR2_qval import storey_q,q_sig_index
+from A04_permutation_test import perm_p, perm_sig
 
 def sim_eval(p_values, fire_index, nonfire_index, adj_p, sig_index, threshold =0.05):
     import pandas as pd
@@ -44,11 +45,11 @@ def sim_eval(p_values, fire_index, nonfire_index, adj_p, sig_index, threshold =0
     return sensitivity,specificity, balanced_accuracy, f1_score, confusion_matrix,significant_p_fire
 
 #Getting Evaluation Results
-corr_method = ["Uncorrected","Bonferroni","Weighted Bonf","Sidak","Weighted Sidak","Holm","Weighted Holm","Simes","Weighted Simes", "BH method","Weighted BH (Genovese) Method","Q-value"]
-adj_p_list = [p_values, bonf_p, bonf_w_p,sidak_p,sidak_w_p,holm_p,holm_w_p,simes_p, simes_w_p,bh_p,bh_w_p,storey_q]
-sig_index_list = [significant_p,bonf_sig_index, bonf_w_sig_index,sidak_sig_index, sidak_w_sig_index,holm_sig_index,holm_w_sig_index,simes_sig_index, simes_w_sig_index,bh_sig_index,bh_w_sig_index,q_sig_index]
+corr_method = ["Uncorrected","Bonferroni","Weighted Bonf","Sidak","Weighted Sidak","Holm","Weighted Holm","Simes","Weighted Simes", "BH method","Weighted BH (Genovese) Method","Q-value","Permutation test"]
+adj_p_list = [p_values, bonf_p, bonf_w_p,sidak_p,sidak_w_p,holm_p,holm_w_p,simes_p, simes_w_p,bh_p,bh_w_p,storey_q, perm_p]
+sig_index_list = [significant_p,bonf_sig_index, bonf_w_sig_index,sidak_sig_index, sidak_w_sig_index,holm_sig_index,holm_w_sig_index,simes_sig_index, simes_w_sig_index,bh_sig_index,bh_w_sig_index,q_sig_index, perm_sig]
 sim_results = sim_eval(p_values, fire_index, nonfire_index, adj_p_list[0], sig_index_list[0], threshold =0.05)
-#len(sim_results[5])
+len(sim_results[5])
 
 for i in range(len(corr_method)):
     print(f"\n* Results for {corr_method[i]}:\n")

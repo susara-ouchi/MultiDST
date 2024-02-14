@@ -89,14 +89,14 @@ from A03_FDR2_qval import storey_q,q_sig_index
 sig_fire_results = []
 for i in range(5): 
     seed = i
-    sim_result = simulation_01(seed, 9500, 500,effect=0.01, threshold=0.05, show_plot=False)
+    sim_result = simulation_01(seed, 9500, 500, effect=0.05, threshold=0.05, show_plot=False)
     p_values = sim_result[0]
     significant_p = sim_result[1]
     sim_eval_res = sim_eval(seed, p_values, significant_p, threshold=0.05)
     sig_fire = sim_eval_res[1]
     p_fire = sim_eval_res[2]
     sig_fire_results.append(len(sig_fire)/p_fire)
-
+ 
 p_fire
 sig_fire_results
 power = np.mean(sig_fire_results)
