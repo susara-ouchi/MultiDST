@@ -12,7 +12,7 @@ from A01_weighting import weighted_p
 #Define function for Benjamini-Hochberg(1995) Procedure 
 def bh_method(p_values, alpha=0.05, weights = True):
     """
-    Apply Holm correction to lists of p-values.
+    Apply Benjamini Hochberg correction to lists of p-values.
 
     Parameters:
         p_values (list): List of original p-values.
@@ -51,9 +51,7 @@ def bh_method(p_values, alpha=0.05, weights = True):
     else:
         adj_p = bh_adj_p(p_values,alpha)
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
-
     return adj_p, sig_index
-
 
 #Overall significance(unweighted)
 bh_test = bh_method(p_values,alpha=0.05, weights = False)
@@ -62,6 +60,3 @@ bh_p, bh_sig_index = bh_test[0], bh_test[1]
 #Overall significance(Weighted)
 bh_test = bh_method(p_values,alpha=0.05, weights = True)
 bh_w_p, bh_w_sig_index = bh_test[0], bh_test[1]
-
-bh_p
-
