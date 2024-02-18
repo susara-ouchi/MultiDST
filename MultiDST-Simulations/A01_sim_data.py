@@ -41,6 +41,7 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,threshold=0.05,show_plo
 
     p_values = p_value_fire + p_value_nonfire
     #Getting Firing and Non-Firing Indices
+    
     fire_index = [index for index,p in enumerate(p_values) if p_values[index] in p_value_fire]
     nonfire_index = [index for index,p in enumerate(p_values) if p_values[index] in p_value_nonfire]
     #print(len(fire_index),len(nonfire_index))
