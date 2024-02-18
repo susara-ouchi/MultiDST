@@ -1,6 +1,6 @@
 #################### Simulation ##################################
 
-# Simulating from Independent samples t-test
+# Simulating from Independent samples t-test #
 
 #Hypothesis:
 #  H0: p-values come from the same distribution 
