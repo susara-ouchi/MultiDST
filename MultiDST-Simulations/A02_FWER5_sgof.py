@@ -1,55 +1,36 @@
 import numpy as np
-import seaborn as sns
-import pandas as pd
-import statsmodels.api as sm
-from statsmodels.stats.multitest import multipletests
-import matplotlib.pyplot as plt
+from scipy.stats import chi2
 
-#loading p values
-from A01_sim_data import p_values, fire_index, nonfire_index
-from A01_weighting import weighted_p
-
-#Define function for Simes(1986) Procedure 
-def simes(p_values, alpha=0.05, weights = True):
-    """
-    Apply Simes correction to lists of p-values.
-
-    Parameters:
-        p_values (list): List of original p-values.
-        alpha: Threshold of significance
-        weights: Whether or not to use weighted approach
-
-    Returns:
-        adj_p: Simes adjusted -values
-        sig_index: significat indices after Holm correction
-    """
-    def simes_adj(p_values, alpha):
-        # Sort the p-values along with their original indices
-        sorted_p_values_with_indices = sorted(enumerate(p_values), key=lambda x: x[1])
-        n = len(p_values)
-        # BH Adjusted p-values with original ordering
-        adj_p_sorted = [[i, ind,min(p_val*n/(i+1),1.0)] for i,(ind,p_val) in enumerate(sorted_p_values_with_indices)]
-        simes_adj_p = [sublist[2] for sublist in adj_p_sorted]
-        return simes_adj_p
-
+def SGoF(p_values, alpha):
+    # Count the number of significant discoveries
+    R = np.sum(np.array(p_values) < alpha)
     m = len(p_values)
-    if weights == True:
-        p_values = weighted_p
-        adj_p = simes_adj(p_values,alpha)
-        sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
-    else:
-        adj_p = simes_adj(p_values,alpha)
-        sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
+    
+    # Step 3: Repeat until there are no more p-values to examine
+    while m > 0:
+        # Step 3a: Check for deviations using chi-square test
+        expected_F = m * alpha
+        observed_F = R
+        chi_squared_stat = (observed_F - expected_F)**2 / expected_F
+        
+        # Approximate chi-square test with degrees of freedom = 1
+        p_value_chi2 = 1 - chi2.cdf(chi_squared_stat, df=1)
+        
+        # If chi-square test is significant
+        if p_value_chi2 < alpha:
+            # Add one more significant discovery
+            R += 1
+            # Update counts
+            m -= 1  # Decrement m since we have one less test to consider
+        else:
+            # Step 3b: If chi-square test is not significant, stop the process
+            break
+    
+    # Step 4: Output the number of significant discoveries
+    return R
 
-    return adj_p, sig_index
-
-
-#Overall significance(unweighted)
-simes_test = simes(p_values,alpha=0.05, weights = False)
-simes_p, simes_sig_index = simes_test[0], simes_test[1]
-
-#Overall significance(Weighted)
-simes_test = simes(p_values,alpha=0.05, weights = True)
-simes_w_p, simes_w_sig_index = simes_test[0], simes_test[1]
-
-simes_p
+# Example usage:
+p_values = [0.001, 0.003, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3]
+alpha = 0.05
+num_significants = SGoF(p_values, alpha)
+print("Number of significant discoveries:", num_significants)
