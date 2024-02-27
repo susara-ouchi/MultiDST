@@ -39,3 +39,4 @@ sidak_p, sidak_sig_index = sidak_test[0], sidak_test[1]
 #Overall significance(Weighted)
 sidak_test = sidak(p_values,alpha=0.05, weights = True)
 sidak_w_p, sidak_w_sig_index = sidak_test[0], sidak_test[1]
+

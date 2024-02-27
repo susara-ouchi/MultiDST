@@ -44,6 +44,7 @@ def simes(p_values, alpha=0.05, weights = True):
     return adj_p, sig_index
 
 
+
 #Overall significance(unweighted)
 simes_test = simes(p_values,alpha=0.05, weights = False)
 simes_p, simes_sig_index = simes_test[0], simes_test[1]
@@ -53,3 +54,34 @@ simes_test = simes(p_values,alpha=0.05, weights = True)
 simes_w_p, simes_w_sig_index = simes_test[0], simes_test[1]
 
 simes_p
+
+# Step-up
+import numpy as np
+
+def simes_correction(p_values):
+    """
+    Apply Simes' method for p-value correction.
+
+    Parameters:
+    - p_values (array-like): List or array of uncorrected p-values.
+
+    Returns:
+    - corrected_p_values (ndarray): Array of corrected p-values.
+    """
+    # Sort p-values in ascending order
+    sorted_p_values = np.sort(p_values)
+
+    # Calculate correction factors for each p-value
+    correction_factors = np.arange(1, len(sorted_p_values) + 1) / len(sorted_p_values)
+
+    # Apply correction using Simes' method
+    corrected_p_values = np.minimum(np.maximum(sorted_p_values * len(sorted_p_values) / correction_factors, 0), 1)
+
+    return corrected_p_values
+
+# Example usage:
+# Assuming p_values is a list or array of uncorrected p-values
+p_values = [0.02, 0.03, 0.001, 0.005, 0.1]
+corrected_p_values = simes_correction(p_values)
+print("Original p-values:", p_values)
+print("Corrected p-values:", corrected_p_values)
