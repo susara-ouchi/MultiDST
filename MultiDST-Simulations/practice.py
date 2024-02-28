@@ -75,3 +75,17 @@ def sim_eval(p_values, fire_index, nonfire_index, adj_p, sig_index, threshold =0
     FP_index = [index for index in nonfire_index if adj_p[index] < threshold]
     TN_index = [index for index in nonfire_index if adj_p[index] >= threshold]
     return power, sensitivity,specificity, balanced_accuracy, f1_score, confusion_matrix,TP_index
+
+
+
+import pandas as pd
+
+# Assuming df is your DataFrame containing the data
+data = {'student_id': [101, 53, 128, 3],
+        'name': ['Ulysses', 'William', 'Henry', 'Henry'],
+        'age': [13, 10, 6, 11]}
+
+df = pd.DataFrame(data)
+
+# Get name and age of student_id 101 as a DataFrame
+student_101_df = df[df['student_id'] == 101][['name', 'age']]
