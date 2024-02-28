@@ -229,3 +229,47 @@ def benjamini_yekutieli(p_values, alpha):
 # alpha = 0.05
 # adjusted_p_values = benjamini_yekutieli(p_values, alpha)
 # print(adjusted_p_values)
+
+
+# Import necessary libraries
+import numpy as np
+
+def benjamini_yekutieli(p_values):
+    # Number of comparisons
+    m = len(p_values)
+
+    # Calculate the Benjamini-Yekutieli adjustment factor
+    q = np.sum(1 / np.arange(1, m + 1))
+
+    # Sort the p-values in ascending order
+    sorted_indices = np.argsort(p_values)
+    sorted_p_values = p_values[sorted_indices]
+
+    # Calculate the adjusted p-values
+    adjusted_p_values = np.minimum(1, q * m / np.arange(m, 0, -1) * sorted_p_values)
+
+    # Ensure that the adjusted p-values are monotonically increasing
+    adjusted_p_values = np.maximum.accumulate(adjusted_p_values[::-1])[::-1]
+
+    # Return the adjusted p-values in their original order
+    return adjusted_p_values[np.argsort(sorted_indices)]
+
+# Define your p-values
+p_values = np.array([0.01, 0.03, 0.05, 0.1, 0.2])  # insert your p-values here
+
+# Adjust the p-values using the Benjamini-Yekutieli procedure
+adjusted_p_values = benjamini_yekutieli(p_values)
+
+print('Adjusted p-values:', adjusted_p_values)
+
+
+
+from statsmodels.stats.multitest import fdrcorrection
+
+# Define your p-values
+p_values = [0.01, 0.03, 0.05, 0.1, 0.2]
+
+# Perform the Benjamini-Yekutieli procedure
+reject, adjusted_p_values = fdrcorrection(p_values, method='n')
+
+print('Adjusted p-values:', adjusted_p_values)
