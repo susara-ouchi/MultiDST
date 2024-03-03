@@ -1,80 +1,50 @@
 import numpy as np
 from scipy.stats import chi2
 
-def SGoF(p_values, alpha):
-    # Count the number of significant discoveries
-    R = np.sum(np.array(p_values) < alpha)
-    m = len(p_values)
+def sgof_test(p_values, alpha):
+    # Step 01: Sort p-values in ascending order
+    sorted_p_values = np.sort(p_values)
     
-    # Step 3: Repeat until there are no more p-values to examine
-    while m > 0:
-        # Step 3a: Check for deviations using chi-square test
-        expected_F = m * alpha
-        observed_F = R
-        chi_squared_stat = (observed_F - expected_F)**2 / expected_F
+    # Step 02: Initialize R (number of p-values below threshold)
+    R = np.sum(sorted_p_values <= alpha)
+    print(R)
+    
+    # Step 03: Test if observed discoveries deviate significantly
+    while R > 0:
+        # Perform chi-square test
+        observed = R
+        expected = len(sorted_p_values) * (1 - alpha)
+        chi_square_statistic = (observed - expected) ** 2 / expected
+        p_value_chi2 = 1 - chi2.cdf(chi_square_statistic, df=1)  # df=1 for chi-square
         
-        # Approximate chi-square test with degrees of freedom = 1
-        p_value_chi2 = 1 - chi2.cdf(chi_squared_stat, df=1)
-        
-        # If chi-square test is significant
+        # Check significance
         if p_value_chi2 < alpha:
-            # Add one more significant discovery
-            R += 1
-            # Update counts
-            m -= 1  # Decrement m since we have one less test to consider
+            R -= 1
         else:
-            # Step 3b: If chi-square test is not significant, stop the process
             break
     
-    # Step 4: Output the number of significant discoveries
-    return R
+    # Step 04: Extract significant tests
+    significant_tests = sorted_p_values[:R]
+    return significant_tests
 
-# Example usage:
-p_values = [0.001, 0.003, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3]
+# Example 01:
 alpha = 0.05
-num_significants = SGoF(p_values, alpha)
-print("Number of significant discoveries:", num_significants)
+p_values = np.array([0.01, 0.02, 0.05, 0.1, 0.15, 0.2])
+positive_tests = sgof_test(p_values, alpha)
+print("Significant tests:", positive_tests)
+#Output: Significant tests: [0.01 0.02 0.05]
 
+np.arange(0.00001, 0.05, 0.01)
 
-# Import necessary libraries
-import numpy as np
-from scipy.stats import chi2, rankdata
+# Example 02:
+list1 = [round(x, 8) for x in np.arange(0.00001, 0.05, 0.01)]
+p_values = np.array(list1)
+positive_tests = sgof_test(p_values, alpha)
+print("Significant tests:", positive_tests)
+# Output: Significant tests: []
 
-def sgof_chi_square(p_values):
-    # Sort the p-values in ascending order
-    sorted_p_values = np.sort(p_values)
-
-    # Calculate the empirical cumulative distribution function (CDF)
-    empirical_cdf = np.arange(1, len(sorted_p_values) + 1) / len(sorted_p_values)
-
-    # Calculate the Chi-Square statistic
-    chi_square_statistic = np.sum((sorted_p_values - empirical_cdf)**2 / empirical_cdf)
-
-    # Calculate the p-value of the Chi-Square test
-    chi_square_p_value = 1 - chi2.cdf(chi_square_statistic, df=len(sorted_p_values) - 1)
-
-    return chi_square_p_value
-
-def benjamini_hochberg(p_values):
-    # Calculate the ranks of the p-values
-    ranks = rankdata(p_values)
-
-    # Calculate the adjusted p-values using the Benjamini-Hochberg procedure
-    adjusted_p_values = p_values * len(p_values) / ranks
-
-    # Ensure that the adjusted p-values are between 0 and 1
-    adjusted_p_values = np.minimum.accumulate(adjusted_p_values[::-1])[::-1]
-
-    return adjusted_p_values
-
-# Define your p-values
-p_values = np.array([...])  # insert your p-values here
-
-# Conduct the SGoF test using the Chi-Square test
-sgof_p_value = sgof_chi_square(p_values)
-
-# Adjust the p-values using the Benjamini-Hochberg procedure
-adjusted_p_values = benjamini_hochberg(p_values)
-
-print('SGoF p-value:', sgof_p_value)
-print('Adjusted p-values:', adjusted_p_values)
+#Example 03:
+p_values = np.array([0.001, 0.02, 0.05, 0.11, 0.53, 0.68, 0.98, 0.99, 0.003])
+positive_tests = sgof_test(p_values, alpha)
+print("Significant tests:", positive_tests)
+#Output: Significant tests: [0.01 0.02 0.05]
