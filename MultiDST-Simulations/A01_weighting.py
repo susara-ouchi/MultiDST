@@ -1,8 +1,7 @@
-
 import numpy as np
 from A01_sim_data import p_values
 
-def weighted_p_list(p_values):
+def weighted_p_list(p_values, weights=np.random.rand(len(p_values))):
     # Generate hypothesis weights (Need to find a procedure to assign weights)
     # This gets stores as a numpy nd array.
     # If input is a list use: weight = np.array(weight_list)
@@ -21,7 +20,7 @@ def weighted_p_list(p_values):
     weighted_p_values = weighted_p_values / T
 
     p_values = weighted_p_values
-    return p_values
+    return weight, p_values
 
-weighted_p = weighted_p_list(p_values)
+weighted_p = weighted_p_list(p_values)[1]
 
