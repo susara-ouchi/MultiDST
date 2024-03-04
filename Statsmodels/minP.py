@@ -1,43 +1,80 @@
 import numpy as np
+from itertools import combinations
 
-def step_down_minp(p_values, B):
-    # Sort the p-values in ascending order
-    p_sorted_indices = np.argsort(p_values)
-    p_sorted = p_values[p_sorted_indices]
+def fwe_minp(pvalues, distr, combine='tippett'):
+    # Choose the combining function
+    funcs = {'fisher': fisher, 'liptak': liptak, 'tippett': tippett}
+    if combine not in funcs:
+        raise ValueError(combine + " is not a valid combining function.")
     
-    m = len(p_values)
+    p = len(pvalues)
     
-    # Initialize q
-    q = np.ones((m + 1, B))
-    
-    # Initialize adjusted p-values
-    adjusted_p_values = np.zeros(m)
-    
-    # Step 6: Move up one row
-    for i in range(m - 1, -1, -1):
-        # Step 3: Compute permutation test statistics
-        # Example: Shuffle the order of the p-values
+    if p < 2:
+        raise ValueError("Nothing to combine!")
         
-        # Hypothetical data for demonstration
-        permuted_p_values = np.random.choice(p_sorted, size=len(p_values), replace=True)
-        print(permuted_p_values)
-
-        # Step 4: Update successive minima
-        q[i, :] = np.minimum(q[i+1, :], permuted_p_values[i])
-                
-        # Step 5: Compute adjusted p-values
-        adjusted_p_values[i] = np.sum(q[i, :] <= permuted_p_values[i]) / B
-        
-        # Step 7: Enforce monotonicity
-        if i < m - 1:
-            adjusted_p_values[i] = max(adjusted_p_values[i+1], adjusted_p_values[i])
+    if distr.shape[1] != p:
+        raise ValueError("Different number of p-values and null distributions")
     
-    # Return adjusted p-values
-    return adjusted_p_values[p_sorted_indices]
+    combn_func = funcs[combine]
+    
+    # Order the p-values
+    p_ord = np.sort(pvalues)
+    perm_pvalues = np.apply_along_axis(pvalue_distr, 1, distr, alternative='greater')
+    perm_pvalues_ord = perm_pvalues[:, np.argsort(pvalues)]
+    
+    # Step down tree of combined hypotheses
+    p_ris = np.full(p, np.nan)
+    combined_stats = np.apply_along_axis(combn_func, 1, perm_pvalues_ord)
+    obs_stat = combn_func(p_ord)
+    p_ris[0] = t2p(obs_stat, combined_stats, alternative='greater')
+    
+    if p > 2:
+        for j in range(1, p - 1):
+            obs_stat = combn_func(p_ord[j:p])
+            combined_stats = np.apply_along_axis(combn_func, 1, perm_pvalues_ord[:, j:p])
+            p_ris[j] = max(t2p(obs_stat, combined_stats, alternative='greater'), p_ris[j - 1])
+    
+    p_ris[p - 1] = max(p_ord[-1], p_ris[p - 2])
+    
+    p_ris[np.argsort(pvalues)] = p_ris
+    return p_ris
 
-# Example usage
-p_values = np.array([0.03, 0.02, 0.05, 0.01, 0.04])
-B = 10  # Number of permutations
+def fisher(pvalues):
+    return -2 * np.sum(np.log(pvalues))
 
-adjusted_p_values = step_down_minp(p_values, B)
-print("Adjusted p-values:", adjusted_p_values)
+def liptak(pvalues):
+    return np.sum(-np.log(pvalues))
+
+def tippett(pvalues):
+    return np.max(-np.log(pvalues))
+
+def pvalue_distr(distr, alternative='greater'):
+    if alternative == 'greater':
+        return np.mean(distr > 0)
+    elif alternative == 'less':
+        return np.mean(distr < 0)
+    elif alternative == 'two-sided':
+        return np.mean(np.abs(distr) > np.abs(0))
+    else:
+        raise ValueError("Invalid alternative")
+    
+def t2p(obs_stat, combined_stats, alternative='greater'):
+    if alternative == 'greater':
+        return np.mean(combined_stats >= obs_stat)
+    elif alternative == 'less':
+        return np.mean(combined_stats <= obs_stat)
+    elif alternative == 'two-sided':
+        return np.mean(np.abs(combined_stats) >= np.abs(obs_stat))
+    else:
+        raise ValueError("Invalid alternative")
+
+
+pvalues = np.array([0.02, 0.05, 0.1, 0.005])
+np.random.seed(123)
+distr = np.random.normal(loc=0, scale=1, size=(100, 4))
+
+# Apply the function
+adjusted_pvalues = fwe_minp(pvalues, distr, combine='tippett')
+
+# Print the adjusted p-values
+print(adjusted_pvalues)

@@ -20,6 +20,7 @@ def bonferroni(p_values, alpha=0.05, weights = False):
     '''
 
     if weights == True:
+        assert len(weights)==len(p_values)
         p_values = weighted_p
         adj_p = [min(p * len(p_values), 1.0) for p in p_values]
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
@@ -39,41 +40,3 @@ bonf_p, bonf_sig_index = bonf_test[0], bonf_test[1]
 bonf_test = bonferroni(p_values,alpha=0.05, weights = True)
 bonf_w_p, bonf_w_sig_index = bonf_test[0], bonf_test[1]
 
-
-import numpy as np
-
-def weighted_bonferroni_correction(p_values, weights):
-    """
-    Apply weighted Bonferroni method for p-value correction.
-
-    Parameters:
-    - p_values (array-like): List or array of uncorrected p-values.
-    - weights (array-like): List or array of weights for each hypothesis.
-
-    Returns:
-    - corrected_p_values (ndarray): Array of corrected p-values.
-    """
-    # Convert inputs to numpy arrays
-    p_values = np.array(p_values)
-    weights = np.array(weights)
-
-    # Calculate the sum of weights
-    sum_weights = np.sum(weights)
-
-    # Adjust the significance threshold
-    alpha_adjusted = 0.05 / sum_weights  # For example, adjust to an overall significance level of 0.05
-
-    # Apply correction using weighted Bonferroni method
-    corrected_p_values = np.minimum(p_values * sum_weights, 1)
-
-    return corrected_p_values
-
-# Example usage:
-# Assuming p_values is a list or array of uncorrected p-values
-# and weights is a list or array of weights for each hypothesis
-p_values = [0.02, 0.03, 0.001, 0.005, 0.1]
-weights = [1, 2, 1, 3, 1]
-
-# Weighted Bonferroni correction
-corrected_p_values_weighted = weighted_bonferroni_correction(p_values, weights)
-print("Weighted Bonferroni corrected p-values:", corrected_p_values_weighted)
