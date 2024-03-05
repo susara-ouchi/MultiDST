@@ -10,7 +10,7 @@ from A01_sim_data import p_values, fire_index, nonfire_index
 from A01_weighting import weighted_p
 
 # Function to calculate adjusted q_values
-def q_adj(p_values, m=None, verbose=True, pi0=None):
+def q_adj_func(p_values, pi0=None, m=None, verbose=True):
     """
     Estimates q-values from p-values
 
@@ -22,8 +22,6 @@ def q_adj(p_values, m=None, verbose=True, pi0=None):
         Number of tests. If not specified m = len(p_values)
     verbose: bool, optional
         Print verbose messages? (default False)
-    lowmem: bool, optional
-        Use memory-efficient in-place algorithm
     pi0: float or None, optional
         If None, it's estimated as suggested in Storey and Tibshirani, 2003.
         For most GWAS this is not necessary, since pi0 is extremely likely to be 1.
@@ -63,11 +61,11 @@ def q_adj(p_values, m=None, verbose=True, pi0=None):
     p_ordered = sorted(range(len(p_values)), key=lambda k: p_values[k])
     p_values = [p_values[i] for i in p_ordered]
     q_adj = [0] * len(p_values)
-    q_adj[-1] = min(pi0 * m / len(p_values) * p_values[-1], 1.0)
+    q_adj[-1] = min(pi0 * p_values[-1], 1.0)
+    for i in range(len(p_values)-2, -1, -1):
+        q_adj[i] = min(pi0 * m * p_values[i] /(i+1), q_adj[i + 1])
 
-    for i in range(len(p_values) - 2, -1, -1):
-        q_adj[i] = min(pi0 * m * p_values[i] / (i + 1.0), q_adj[i + 1])
-
+    # Re-ordering the q-values
     q_adj_temp = q_adj.copy()
     q_adj = [0] * len(p_values)
     for i, idx in enumerate(p_ordered):
@@ -75,43 +73,22 @@ def q_adj(p_values, m=None, verbose=True, pi0=None):
 
     return q_adj
 
-#Define function for Sidak Procedure 
+#Define function for Q value Procedure 
 def q_value(p_values, alpha=0.05, weights = True):
-    """
-    Apply Storey's Q value correction to lists of p-values.
-
-    Parameters:
-        p_values (list): List of original p-values.
-        p_value_fire (list): List of original p-values for fire condition.
-        p_value_nonfire (list): List of original p-values for non-fire condition.
-        alpha (float): Original significance level.
-
-    Returns:
-        sidak_p_values (list): List of Šidák-corrected p-values.
-        sidak_p_value_fire (list): List of Šidák-corrected p-values for fire condition.
-        sidak_p_value_nonfire (list): List of Šidák-corrected p-values for non-fire condition.
-    """
     m = len(p_values)
     if weights == True:
         p_values = weighted_p
 
-        adj_p = q_adj(p_values)
+        adj_p = q_adj_func(p_values)
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
     else:
         # Q value correction
-        adj_p = q_adj(p_values)
+        adj_p = q_adj_func(p_values)
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
-
     return adj_p, sig_index
 
-
-#Overall significance(unweighted)
-q_val = q_value(p_values,alpha=0.05, weights = False)
-storey_q, q_sig_index = q_val[0], q_val[1]
-
-#Overall significance(Weighted)
-q_val = q_value(p_values,alpha=0.05, weights = True)
-storey_q_w, q_w_sig_index = q_val[0], q_val[1]
-
-storey_q
-q_sig_index
+p_values = [0.0005279804659690256, 0.05107595122255753, 0.005380747546894805, 0.008293070676726721, 0.015261930084251897, 0.09399292181095295, 0.04916062506442831, 0.08455877419751781, 0.026622720150619863, 0.060671184302609794, 0.014792473316734833, 0.029279038132892888, 0.039948575984906864, 0.05455860141093238, 0.06495646577203158, 0.01393407242591071, 0.06592036470024257, 0.03370049417508525, 0.08285377432610773, 0.055087308119778314]
+q_results = q_value(p_values,alpha=0.05, weights = False)
+q, sig_q = q_results[0], q_results[1]
+q
+sig_q

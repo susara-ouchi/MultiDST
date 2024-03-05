@@ -19,12 +19,12 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,threshold=0.05,show_plo
     #Control Group Distribution
     m0 = 0
     s0 = 1 
-    n0 = 100
+    n0 = 30
 
     #Treatment Group Distribution
     m1 = effect
     s1 = 1
-    n1 = 100
+    n1 = 30
 
     p_value_fire = []
     p_value_nonfire = []
@@ -62,5 +62,5 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,threshold=0.05,show_plo
     return p_values, significant_p, fire_index, nonfire_index
 
 #Simulating Dataset for 500 F and 9500 NF 
-sim1 = simulation_01(42,9500,500, effect = 0.1, threshold=0.05,show_plot=True)
+sim1 = simulation_01(42,9500,500, effect = 0.5, threshold=0.05,show_plot=True)
 p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]

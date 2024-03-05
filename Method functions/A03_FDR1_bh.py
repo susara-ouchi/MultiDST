@@ -53,12 +53,17 @@ def bh_method(p_values, alpha=0.05, weights = True):
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
     return adj_p, sig_index
 
-p_values = [0.01, 0.03, 0.05, 0.1, 0.2, 0.0001, 0.456]
-#Overall significance(unweighted)
-bh_test = bh_method(p_values,alpha=0.05, weights = False)
-bh_p, bh_sig_index = bh_test[0], bh_test[1]
-bh_p
+p_values = [0.0005279804659690256, 0.05107595122255753, 0.005380747546894805, 0.008293070676726721, 0.015261930084251897, 0.09399292181095295, 0.04916062506442831, 0.08455877419751781, 0.026622720150619863, 0.060671184302609794, 0.014792473316734833, 0.029279038132892888, 0.039948575984906864, 0.05455860141093238, 0.06495646577203158, 0.01393407242591071, 0.06592036470024257, 0.03370049417508525, 0.08285377432610773, 0.055087308119778314]
 
-#Overall significance(Weighted)
-bh_test = bh_method(p_values,alpha=0.05, weights = True)
-bh_w_p, bh_w_sig_index = bh_test[0], bh_test[1]
+
+def bh_method(p_values, alpha=0.05, weights = False):
+    from statsmodels.stats.multitest import multipletests
+    # Apply BH correction
+    adj_p = multipletests(p_values, method='fdr_bh')[1]
+    sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
+    return adj_p, sig_index
+
+bh_results = bh_method(p_values,alpha=0.05, weights = False)
+bh_p, sig_bh_p = bh_results[0], bh_results[1]
+bh_p
+sig_bh_p
