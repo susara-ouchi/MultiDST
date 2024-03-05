@@ -7,6 +7,7 @@ from A03_FDR2_qval import q_value
 from A03_FDR3_BY import BY_method
 
 from visualization import draw_histogram
+from visualization import sig_index_plot
 
 import pandas as pd
 
@@ -39,30 +40,37 @@ draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Hist
 # 0 - Uncorrected
 sig_index = [index for index,p in enumerate(p_values) if p < 0.05]
 len(sig_index)
+sig_index_plot(p_values, sig_index)
 
 # 1 - Bonferroni
 bonf_results = bonferroni(p_values,alpha=0.05, weights = False)
 bonf_p, sig_bonf_p = bonf_results[0], bonf_results[1]
+sig_index_plot(p_values, sig_bonf_p)
 
 # 2 - Holm
 holm_results = holm(p_values,alpha=0.05, weights = False)
 holm_p, sig_holm_p = holm_results[0], holm_results[1]
+sig_index_plot(p_values, sig_holm_p)
 
 # 3 - SGoF
 sgof_results = sgof_test(p_values,alpha=0.05, weights = False)
 sgof_p, sig_sgof_p = sgof_results[0], sgof_results[1]
+sig_index_plot(p_values, sig_sgof_p)
 
 # 4 - BH
 bh_results = bh_method(p_values,alpha=0.05, weights = False)
 bh_p, sig_bh_p = bh_results[0], bh_results[1]
+sig_index_plot(p_values, sig_bh_p)
 
 # 5 - BY
 by_results = BY_method(p_values,alpha=0.05, weights = False)
 by_p, sig_by_p = by_results[0], by_results[1]
+sig_index_plot(p_values, sig_by_p)
 
 # 6 - Qval
 q_results = q_value(p_values,alpha=0.05, weights = False)
 q, sig_q = q_results[0], q_results[1]
+sig_index_plot(p_values, sig_q)
 
 print("Uncorrected: ",len(sig_index),
       "\nBonferroni:",len(sig_bonf_p),

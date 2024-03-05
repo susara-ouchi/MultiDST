@@ -31,6 +31,64 @@ def sim_eval(seed,adj_p, sig_index, threshold =0.05):
 
 ########################## Getting simulation results ##############################
 
+from A01_weighting import weighted_p_list
+from A02_FWER1_bonferroni import bonferroni
+from A02_FWER3_holm import holm
+from A02_FWER5_sgof import sgof_test
+from A03_FDR1_bh import bh_method
+from A03_FDR2_qval import q_value
+from A03_FDR3_BY import BY_method
+
+# 1 - Bonferroni
+bonf_results = bonferroni(p_values,alpha=0.05, weights = False)
+bonf_p, sig_bonf_p = bonf_results[0], bonf_results[1]
+sig_bonf_p
+len(sig_bonf_p)
+
+# 2 - Holm
+holm_results = holm(p_values,alpha=0.05, weights = False)
+holm_p, sig_holm_p = holm_results[0], holm_results[1]
+sig_holm_p
+len(sig_holm_p)
+
+# 3 - SGoF
+sgof_results = sgof_test(p_values,alpha=0.05, weights = False)
+sgof_p, sig_sgof_p = sgof_results[0], sgof_results[1]
+sig_sgof_p
+len(sig_sgof_p)
+
+# 4 - BH
+bh_results = bh_method(p_values,alpha=0.05, weights = False)
+bh_p, sig_bh_p = bh_results[0], bh_results[1]
+bh_p
+sig_bh_p
+len(sig_bh_p)
+
+# 5 - BY
+by_results = BY_method(p_values,alpha=0.05, weights = False)
+by_p, sig_by_p = by_results[0], by_results[1]
+by_p
+sig_by_p
+len(sig_by_p)
+
+
+# 6 - Qval
+q_results = q_value(p_values,alpha=0.05, weights = False)
+q, sig_q = q_results[0], q_results[1]
+q
+sig_q
+len(sig_q)
+
+len(sig_bonf_p)
+len(sig_holm_p)
+len(sig_sgof_p)
+len(sig_bh_p)
+len(sig_by_p)
+len(sig_q)
+
+
+### Setting up simulations ###
+
 n0_list = []
 effect_list = []
 pi0_list = []
@@ -39,7 +97,7 @@ fdr_list,fdr_sd_list = [],[]
 accuracy_list, accuracy_sd_list = [],[]
 f1_list, f1_sd_list = [],[]
 
-def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0):
+def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect):
     import pandas as pd
     n1 = n0
     sim_power = []
@@ -92,7 +150,7 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0):
     # Appending values to the lists
     n0_list.append(n0)
     effect_list.append(effect)
-    pi0_list.append(pi0)
+    pi0_list.append(n0)
     power_list.append(power)
     power_sd_list.append(sd)
     fdr_list.append(fdr)
@@ -101,26 +159,25 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0):
     accuracy_sd_list.append(acc_sd)
     f1_list.append(f1)
     f1_sd_list.append(f1_sd)
-    print("Done!\n...")
+
 
 def power_sim_sample(num_simulations):
-    sample_size = [5,15,30] #[5,15,30]      # From Kang
+    sample_size = [5] #[5,15,30]      # From Kang
     print("\n---------------------------------------------\n")
     for l in sample_size:
         n0 = l
-        num_firing = [9500,7500,5000] #[9500,9000,7500,5000]    # From BonEV
+        num_firing = [9500] #[9500,9000,7500,5000]    # From BonEV
         total_p = 10000
         for k in num_firing:
             num_firing = k
             num_nonfire = total_p - k
-            pi0 = num_firing/total_p
-            effect_size = [0.05,0.1,0.3,0.5] #[0.05, 0.1, 0.3, 0.5]     # From SGoF
+            effect_size = [0.05,0.5] #[0.05, 0.1, 0.3, 0.5]     # From SGoF
             for j in effect_size:
                 effect= j
                 print(f"n0 = n1 = {n0}",
-                      f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0} \n...",
-                      f"\neffect size: {effect}")
-                power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0)
+                      f"\neffect size: {effect}",
+                      f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {num_firing/(num_firing+num_nonfire)} \n...")
+                power_sim1(num_simulations,n0,num_firing,num_nonfire,effect)
 
 
 power_sim_sample(num_simulations=2)
@@ -137,13 +194,26 @@ accuracy_sd_list
 f1_list
 f1_sd_list 
 
-# Create a DataFrame
-import pandas as pd
+# Create a list of tuples containing corresponding elements from each list
+data = list(zip(n0_list, effect_list, pi0_list, power_list, power_sd_list,
+                fdr_list, fdr_sd_list, accuracy_list, accuracy_sd_list,
+                f1_list, f1_sd_list))
 
+# Define headers for the table
+headers = ["n0", "Effect", "Pi0", "Power", "Power SD",
+           "FDR", "FDR SD", "Accuracy", "Accuracy SD",
+           "F1", "F1 SD"]
+
+# Print the table
+from tabulate import tabulate
+print(tabulate(data, headers=headers, tablefmt="grid"))
+
+
+# Create a DataFrame
 data = {
     'n0': n0_list,
-    'Pi0': pi0_list,
     'Effect': effect_list,
+    'Pi0': pi0_list,
     'Power': power_list,
     'Power SD': power_sd_list,
     'FDR': fdr_list,
