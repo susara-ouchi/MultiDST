@@ -87,16 +87,19 @@ pvals = np.array([0.01, 0.03, 0.05, 0.1, 0.2])
 
 fdrcorrection(pvals, alpha=0.05, method='n', is_sorted=False)
 
+def BY_method(p_values, alpha=0.05, weights = False):
+    from statsmodels.stats.multitest import multipletests
+    # Apply Benjamini-Yekutieli correction
+    adj_p = multipletests(p_values, method='fdr_by')[1]
+    sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
+    
+    return adj_p, sig_index
 
-from statsmodels.stats.multitest import fdrcorrection
-# Define your p-values
-p_values = [0.01, 0.03, 0.05, 0.1, 0.2]
-# Perform the Benjamini-Yekutieli procedure
-reject, adjusted_p_values = fdrcorrection(p_values, method='n')
+control_1 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_1.tsv', sep='\t')
+p_values = control_1['5455178010_A.Detection Pval']
 
-print('Adjusted p-values:', adjusted_p_values)
-
-[0.01, 0.03, 0.05, 0.1, 0.2, 0.0001, 0.456]
-reject, adjusted_p_values = fdrcorrection(p_values)
-
-print('Adjusted p-values:', adjusted_p_values)
+by_results = BY_method(p_values,alpha=0.05, weights = False)
+by_p, sig_by_p = by_results[0], by_results[1]
+by_p
+sig_by_p
+len(sig_by_p)

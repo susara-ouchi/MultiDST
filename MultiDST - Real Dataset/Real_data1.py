@@ -1,7 +1,8 @@
 import pandas as pd
 
-# Opening the file in read mode 
-with open('experimental_pvalues.txt', 'r') as file:
+# Opening the file in read mode
+ 
+with open('MultiDST/MultiDST - Real Dataset/experimental_pvalues.txt', 'r') as file:
     # Read the entire content of the file
     content = file.read()
 
@@ -15,6 +16,10 @@ colnames = lines[0].split()
 # Create a DataFrame using pandas
 df = pd.DataFrame(table_data[1:], columns=colnames)
 
+df['p.value.MPRA']
+
+
 # Display the DataFrame
 print(df)
 df.describe()
+

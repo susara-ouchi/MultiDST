@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from scipy.stats import chi2
 
 def sgof_test(p_values, alpha, weights=False):
@@ -31,6 +32,8 @@ def sgof_test(p_values, alpha, weights=False):
     
     return significant_tests, significant_indices
 
+control_1 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_1.tsv', sep='\t')
+p_values = control_1['5455178010_A.Detection Pval']
 
 sgof_results = sgof_test(p_values,alpha=0.05, weights = False)
 sgof_p, sig_sgof_p = sgof_results[0], sgof_results[1]

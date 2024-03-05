@@ -9,43 +9,29 @@ from A03_FDR3_BY import BY_method
 from visualization import draw_histogram
 
 import pandas as pd
-# Opening each dataset
-control_1 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_1.tsv', sep='\t')
-control_2 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_2.tsv', sep='\t')
-control_3 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_3.tsv', sep='\t')
-control_4 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_4.tsv', sep='\t')
-control_5 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_4.tsv', sep='\t')
-test_1 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_1.tsv', sep='\t')
-test_2 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_2.tsv', sep='\t')
-test_3 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_3.tsv', sep='\t')
-test_4 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_4.tsv', sep='\t')
-test_5 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_5.tsv', sep='\t')
 
+# Opening the file in read mode
+ 
+with open('MultiDST/MultiDST - Real Dataset/experimental_pvalues.txt', 'r') as file:
+    # Read the entire content of the file
+    content = file.read()
 
-# Person 01
-C1_p = control_1['5455178010_A.Detection Pval']
-T1_p = test_1['5455178010_B.Detection Pval']
+# Split the content into lines
+lines = content.splitlines()
 
-# Person 02
-C2_p = control_2['5455178010_E.Detection Pval']
-T2_p = test_2['5455178010_F.Detection Pval']
+# Split each line into columns (assuming a space delimiter)
+table_data = [line.split() for line in lines]
+colnames = lines[0].split()
 
-# Person 03
-C3_p = control_3['5455178010_I.Detection Pval']
-T3_p = test_3['5455178010_J.Detection Pval']
+# Create a DataFrame using pandas
+df = pd.DataFrame(table_data[1:], columns=colnames)
 
-# Person 04
-C4_p = control_4['5522887032_E.Detection Pval']
-T4_p = test_4['5522887032_F.Detection Pval']
-
-# Person 05
-C5_p = control_5['5522887032_E.Detection Pval']
-T5_p = test_5['5522887032_J.Detection Pval']
-
+P_MPRA = df['p.value.MPRA']
+P_STARR = df['p.value.STARR']
 
 ########################### For the full dataset #################################
 
-p_values = C1_p
+p_values = P_MPRA.values.astype(float)
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 01 - Applying the methods #################################
@@ -86,12 +72,12 @@ print("Uncorrected: ",len(sig_index),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
 
-############################# Shortlisting p values ########################
+############################# Shortlisting p values - Remove Bonferroni ########################
 
 p_values2 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_bonf_p]
 p_values = p_values2
-draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
+draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 02 -  Applying the methods #################################
 
@@ -136,6 +122,7 @@ print("Uncorrected: ",len(sig_index),
 
 p_values3 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_q]
 p_values = p_values3
+
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 02 -  Applying the methods #################################
@@ -180,6 +167,7 @@ print("Uncorrected: ",len(sig_index),
 
 p_values4 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_sgof_p]
 p_values = p_values4
+
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 02 -  Applying the methods #################################
@@ -225,6 +213,7 @@ print("Uncorrected: ",len(sig_index),
 
 p_values5 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_sgof_p]
 p_values = p_values5
+
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 02 -  Applying the methods #################################
@@ -264,6 +253,7 @@ print("Uncorrected: ",len(sig_index),
       "\nBH",len(sig_bh_p),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
+
 
 # Now that all the methods have shortlisted the p-values, take a look at the uncorrected ones
 [p_values5[i] for i in sig_index]
