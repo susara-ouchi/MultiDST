@@ -11,12 +11,6 @@ import matplotlib.pyplot as plt
 ###################################### Simulation ###########################################
 from A01_sim_data import simulation_01
 
-'''
-sim01 = simulation_01(42,9000,1000, effect = 0.3, threshold=0.05,show_plot=True)
-p_values = sim01[0]
-sig_p = sim01[1]
-'''
-
 ####################################### Sim eval ##############################################
 def sim_eval(seed,adj_p, sig_index, threshold =0.05):
     sim1 = simulation_01(seed,9500,500,threshold=0.05,show_plot=False)
@@ -89,6 +83,21 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0):
     f1 = np.mean(sim_f1)
     f1_sd = np.std(sim_f1)
 
+
+    # Intermediate table
+    from tabulate import tabulate
+    # Create a list of tuples for the data
+    data = [
+        ("Power", power, sd),
+        ("FDR", fdr, fdr_sd),
+        ("Accuracy", acc, acc_sd),
+        ("F1", f1, f1_sd)
+    ]
+    # Print the table
+    print(tabulate(data, headers=["Metric", "Value", "Std Dev"], tablefmt="grid"))
+    print("\n---------------------------------------------\n")
+
+
     # Appending values to the lists
     n0_list.append(n0)
     effect_list.append(effect)
@@ -108,7 +117,7 @@ def power_sim_sample(num_simulations):
     print("\n---------------------------------------------\n")
     for l in sample_size:
         n0 = l
-        num_firing = [9500,7500,5000] #[9500,9000,7500,5000]    # From BonEV
+        num_firing = [10000, 9500, 7500, 6750, 5000, 3000] #[9500,9000,7500,5000]    # From BonEV
         total_p = 10000
         for k in num_firing:
             num_firing = k
@@ -118,8 +127,8 @@ def power_sim_sample(num_simulations):
             for j in effect_size:
                 effect= j
                 print(f"n0 = n1 = {n0}",
-                      f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0} \n...",
-                      f"\neffect size: {effect}")
+                      f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0}",
+                      f"\neffect size: {effect}\n...")
                 power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0)
 
 
@@ -154,7 +163,11 @@ data = {
     'F1 SD': f1_sd_list
 }
 
-df = pd.DataFrame(data)
+df_uncorrected = pd.DataFrame(data)
 
 # Print the DataFrame
-print(df)
+print(df_uncorrected)
+
+df_uncorrected.to_csv('MultiDST/Method functions/uncorrected_sim_results.csv', index=False)
+
+
