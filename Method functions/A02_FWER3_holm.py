@@ -5,57 +5,18 @@ from A01_sim_data import p_values, fire_index, nonfire_index
 from A01_weighting import weighted_p
 
 #Define function for Holm Procedure 
-def holm(p_values, alpha=0.05, weights = True):
-    """
-    Apply Holm correction to lists of p-values.
+import numpy as np
 
-    Parameters:
-        p_values (list): List of original p-values.
-        alpha: Threshold of significance
-        weights: Whether or not to use weighted approach
-
-    Returns:
-        adj_p: Holm adjusted -values
-        sig_index: significat indices after Holm correction
-    """
-    def holm_adj_p(p_values):
-        # Sort the p-values in ascending order and keep track of their original indices
-        sorted_p_values_with_indices = sorted(enumerate(p_values), key=lambda x: x[1])
-        # Calculate the adjusted significance level for each p-value
-        n = len(p_values)
-        adjusted_alpha_values = [sorted_p_values_with_indices[i][1] / (n - i) for i in range(n)]
-        # Apply Holm correction
-        adj_p_indices = [(sorted_p_values_with_indices[i][0], min(adjusted_alpha_values[i:])) for i in range(n)]
-        # Reversing the sort the corrected p-values based on their original indices
-        holm_adj_p = [p for i, p in sorted(adj_p_indices)]
-        return holm_adj_p
-
-    m = len(p_values)
-    if weights == True:
-        p_values = weighted_p
-        adj_p = holm_adj_p(p_values)
-        sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
-
-    else:
-        adj_p = holm_adj_p(p_values)
-        sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
-
+def holm(p_values, alpha=0.05, weights = False):
+    from statsmodels.stats.multitest import multipletests
+    # Apply Holm-Bonferroni correction
+    adj_p = multipletests(p_values, method='holm')[1]
+    sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
+    
     return adj_p, sig_index
 
-p_values
-#Overall significance(unweighted)
-holm_test = holm(p_values,alpha=0.05, weights = False)
-holm_p, holm_sig_index = holm_test[0], holm_test[1]
-
-#Overall significance(Weighted)
-holm_test = holm(p_values,alpha=0.05, weights = True)
-holm_w_p, holm_w_sig_index = holm_test[0], holm_test[1]
-
-import numpy as np
-from statsmodels.stats.multitest import multipletests
-
-# Apply Holm-Bonferroni correction
-corrected_pvalues = multipletests(p_values, method='holm')[1]
-
-# Print corrected p-values
-print(corrected_pvalues)
+p_values = [0.0005279804659690256, 0.05107595122255753, 0.005380747546894805, 0.008293070676726721, 0.015261930084251897, 0.09399292181095295, 0.04916062506442831, 0.08455877419751781, 0.026622720150619863, 0.060671184302609794, 0.014792473316734833, 0.029279038132892888, 0.039948575984906864, 0.05455860141093238, 0.06495646577203158, 0.01393407242591071, 0.06592036470024257, 0.03370049417508525, 0.08285377432610773, 0.055087308119778314]
+holm_results = holm(p_values,alpha=0.05, weights = False)
+holm_p, sig_holm_p = holm_results[0], holm_results[1]
+holm_p
+sig_holm_p

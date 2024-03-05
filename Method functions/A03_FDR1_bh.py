@@ -1,9 +1,4 @@
-import numpy as np
-import seaborn as sns
-import pandas as pd
-import statsmodels.api as sm
 from statsmodels.stats.multitest import multipletests
-import matplotlib.pyplot as plt
 
 #loading p values
 from A01_sim_data import p_values, fire_index, nonfire_index
@@ -53,12 +48,15 @@ def bh_method(p_values, alpha=0.05, weights = True):
         sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
     return adj_p, sig_index
 
-p_values = [0.01, 0.03, 0.05, 0.1, 0.2, 0.0001, 0.456]
-#Overall significance(unweighted)
-bh_test = bh_method(p_values,alpha=0.05, weights = False)
-bh_p, bh_sig_index = bh_test[0], bh_test[1]
-bh_p
 
-#Overall significance(Weighted)
-bh_test = bh_method(p_values,alpha=0.05, weights = True)
-bh_w_p, bh_w_sig_index = bh_test[0], bh_test[1]
+def bh_method(p_values, alpha=0.05, weights = False):
+    from statsmodels.stats.multitest import multipletests
+    # Apply BH correction
+    adj_p = multipletests(p_values, method='fdr_bh')[1]
+    sig_index = [index for index,p in enumerate(adj_p) if p < alpha]
+    return adj_p, sig_index
+
+bh_results = bh_method(p_values,alpha=0.05, weights = False)
+bh_p, sig_bh_p = bh_results[0], bh_results[1]
+bh_p
+sig_bh_p

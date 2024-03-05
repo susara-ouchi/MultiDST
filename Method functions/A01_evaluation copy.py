@@ -7,7 +7,6 @@ from A02_FWER1_bonferroni import bonf_p, bonf_sig_index, bonf_w_p, bonf_w_sig_in
 from A02_FWER3_holm import holm_p,holm_sig_index,holm_w_p,holm_w_sig_index
 from A03_FDR1_bh import bh_p,bh_sig_index,bh_w_p,bh_w_sig_index
 from A03_FDR2_qval import storey_q,q_sig_index
-from A04_permutation_test import perm_p, perm_sig
 
 def sim_eval(p_values, fire_index, nonfire_index, adj_p, sig_index, threshold =0.05):
     import pandas as pd
