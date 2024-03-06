@@ -5,15 +5,17 @@
 #Hypothesis:
 #  H0: p-values come from the same distribution 
 #  H1: p-values comes from two different distributions
+
 import numpy as np
 import matplotlib.pyplot as plt
+import time
+from joblib import Parallel, delayed
 
-###################################### Simulation ###########################################
+###################################### Simulation distribution loading ###########################################
 from A01_sim_data import simulation_01
-from A03_FDR1_bh import bh_method
-
 
 ####################################### Sim eval ##############################################
+
 def sim_eval(seed,adj_p, sig_index, threshold =0.05):
     sim1 = simulation_01(seed,9500,500,threshold=0.05,show_plot=False)
     p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
@@ -24,16 +26,6 @@ def sim_eval(seed,adj_p, sig_index, threshold =0.05):
     significant_p_nonfire = [adj_p[index] for index in nonfire_index if adj_p[index] < threshold]
 
     return p_values, significant_p_fire,significant_p_nonfire,p_fire,p_nonfire
-
-########################## Getting simulation results ##############################
-
-n0_list = []
-effect_list = []
-pi0_list = []
-power_list,power_sd_list = [],[]
-fdr_list,fdr_sd_list = [],[]
-accuracy_list, accuracy_sd_list = [],[]
-f1_list, f1_sd_list = [],[]
 
 ########################## Getting simulation results ##############################
 n0_list = []
@@ -59,7 +51,7 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0):
         sim_result = simulation_01(seed,num_firing,num_nonfire,effect,n0,n1,threshold=0.05,show_plot=False)
         p_values = sim_result[0]
         #significant p-values from method
-        significant_p = bh_method(p_values,alpha=0.05, weights = False)[1]
+        significant_p = sim_result[1]
         sim_eval_res = sim_eval(seed, p_values, significant_p, threshold=0.05)
         sig_fire = sim_eval_res[1]
         sig_nonfire = sim_eval_res[2]
@@ -115,7 +107,7 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0):
     # Print the table
     print(tabulate(data, headers=["Metric", "Value", "Std Dev"], tablefmt="grid"))
     print("\n---------------------------------------------\n")
- 
+
     # Appending values to the lists
     n0_list.append(n0)
     effect_list.append(effect)
@@ -137,7 +129,7 @@ def power_sim_sample(num_simulations):
     print("\n---------------------------------------------\n")
     for l in sample_size:
         n0 = l
-        num_firing = [10000, 9000, 7500, 5000, 3000] #[9500,9000,7500,5000]    # From BonEV
+        num_firing = [10000, 9000, 7500, 5000, 3000] #[10000,9000,7500,5000, 3000]    # From BonEV
         total_p = 10000
         for k in num_firing:
             num_firing = k
@@ -147,12 +139,16 @@ def power_sim_sample(num_simulations):
             for j in effect_size:
                 effect= j
                 print(f"n0 = n1 = {n0}",
-                      f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0}",
-                      f"\neffect size: {effect}\n...")
+                    f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0}",
+                    f"\neffect size: {effect}\n...")
                 power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0)
 
 
-power_sim_sample(num_simulations=10)
+t1 = time.time()
+
+results = Parallel(n_jobs=-1)(power_sim_sample(num_simulations=10))
+
+t2 = time.time()
 
 n0_list
 effect_list
@@ -189,15 +185,41 @@ data = {
     'F1 SD': f1_sd_list
 }
 
-
-
-
-
-df_bh = pd.DataFrame(data)
+df_uncorrected = pd.DataFrame(data)
 
 # Print the DataFrame
-print(df_bh)
+print(df_uncorrected)
+print(t2-t1)
 
-df_bh.to_csv('MultiDST/Method functions/bh_sim_results.csv', index=False)
+df_uncorrected.to_csv('MultiDST/Method functions/uncorrected_sim_results.csv', index=False)
 
 
+#from visualization import group_line_plot
+# df_uncorrected = simulation_uncorrected(num_simulations=1)
+
+'''
+df_unc_n5 = df_uncorrected[:20]
+
+group_line_plot(df_select=df_unc_n5, g_var="Pi0", var1="Effect", var2="Power")
+group_line_plot(df_select=df_unc_n5, g_var="Pi0", var1="Effect", var2="Accuracy")
+group_line_plot(df_select=df_unc_n5, g_var="Pi0", var1="Effect", var2="TPR")
+group_line_plot(df_select=df_unc_n5, g_var="Pi0", var1="Effect", var2="FPR")
+
+df_unc_n15 = df_uncorrected[20:40]
+
+group_line_plot(df_select=df_unc_n15, g_var="Pi0", var1="Effect", var2="Power")
+group_line_plot(df_select=df_unc_n15, g_var="Pi0", var1="Effect", var2="Accuracy")
+group_line_plot(df_select=df_unc_n15, g_var="Pi0", var1="Effect", var2="TPR")
+group_line_plot(df_select=df_unc_n15, g_var="Pi0", var1="Effect", var2="FPR")
+
+
+df_unc_n30 = df_uncorrected[40:60]
+
+group_line_plot(df_select=df_unc_n30, g_var="Pi0", var1="Effect", var2="Power")
+group_line_plot(df_select=df_unc_n30, g_var="Pi0", var1="Effect", var2="Accuracy")
+group_line_plot(df_select=df_unc_n30, g_var="Pi0", var1="Effect", var2="TPR")
+group_line_plot(df_select=df_unc_n30, g_var="Pi0", var1="Effect", var2="FPR")
+
+
+#group_line_plot(df_select=df_unc_n30, g_var="Effect", var1="Pi0", var2="Accuracy")
+'''

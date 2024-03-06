@@ -7,6 +7,7 @@ from A03_FDR2_qval import q_value
 from A03_FDR3_BY import BY_method
 
 from visualization import draw_histogram
+from visualization import sig_index_plot
 
 import pandas as pd
 # Opening each dataset
@@ -47,12 +48,14 @@ T5_p = test_5['5522887032_J.Detection Pval']
 
 p_values = C1_p
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
-
+ 
 ###################### Try 01 - Applying the methods #################################
 
 # 0 - Uncorrected
 sig_index = [index for index,p in enumerate(p_values) if p < 0.05]
 len(sig_index)
+non_sig_index = [index for index,p in enumerate(p_values) if p >= 0.05]
+sig_index_plot(sig_index,non_sig_index)
 
 # 1 - Bonferroni
 bonf_results = bonferroni(p_values,alpha=0.05, weights = False)

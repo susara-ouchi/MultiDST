@@ -5,8 +5,8 @@
 #Hypothesis:
 #  H0: p-values come from the same distribution 
 #  H1: p-values comes from two different distributions
+
 import numpy as np
-import matplotlib.pyplot as plt
 
 ###################################### Simulation ###########################################
 from A01_sim_data import simulation_01
@@ -40,6 +40,7 @@ from A03_FDR2_qval import q_value
 from A03_FDR3_BY import BY_method
 
 # 1 - Bonferroni
+p_values = [0.05]
 bonf_results = bonferroni(p_values,alpha=0.05, weights = False)
 bonf_p, sig_bonf_p = bonf_results[0], bonf_results[1]
 sig_bonf_p
@@ -70,7 +71,6 @@ by_p, sig_by_p = by_results[0], by_results[1]
 by_p
 sig_by_p
 len(sig_by_p)
-
 
 # 6 - Qval
 q_results = q_value(p_values,alpha=0.05, weights = False)
@@ -146,6 +146,19 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect):
 
     f1 = np.mean(sim_f1)
     f1_sd = np.std(sim_f1)
+
+    # Intermediate table
+    from tabulate import tabulate
+    # Create a list of tuples for the data
+    data = [
+        ("Power", power, sd),
+        ("FDR", fdr, fdr_sd),
+        ("Accuracy", acc, acc_sd),
+        ("F1", f1, f1_sd)
+    ]
+    # Print the table
+    print(tabulate(data, headers=["Metric", "Value", "Std Dev"], tablefmt="grid"))
+    print("\n---------------------------------------------\n")
 
     # Appending values to the lists
     n0_list.append(n0)
@@ -224,6 +237,7 @@ data = {
     'F1 SD': f1_sd_list
 }
 
+import pandas as pd
 df = pd.DataFrame(data)
 
 # Print the DataFrame

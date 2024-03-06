@@ -5,7 +5,7 @@ from A01_sim_data import p_values, fire_index, nonfire_index
 from A01_weighting import weighted_p
 
 #Define function for Benjamini-Hochberg(1995) Procedure 
-def bh_method(p_values, alpha=0.05, weights = True):
+def bh_method1(p_values, alpha=0.05, weights = True):
     """
     Apply Benjamini Hochberg correction to lists of p-values.
 

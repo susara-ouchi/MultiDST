@@ -97,3 +97,23 @@ p_values = [0.1,0.2,0.05,0.6,0.1,0.1,0.05,0.04,0.006,0.7,0.4]
 sig_index = [0,2,3,5]
 
 sig_index_plot(p_values, sig_index)
+
+
+def group_line_plot(df_select, g_var,var1,var2): 
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    # Grouping the DataFrame by 'pi0'
+    grouped = df_select.groupby(g_var)
+
+    # Plotting each group separately
+    for name, group in grouped:
+        plt.plot(group[var1], group[var2], label=f'{g_var} = {name}')
+
+    # Adding labels, title, and legend
+    plt.xlabel(var1)
+    plt.ylabel(var2)
+    plt.title(f'Line Plot of {var2} over {var1}')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
