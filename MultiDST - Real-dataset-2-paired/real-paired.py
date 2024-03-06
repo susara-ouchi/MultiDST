@@ -13,6 +13,18 @@ test_3 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_3.tsv', sep
 test_4 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_4.tsv', sep='\t')
 test_5 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_5.tsv', sep='\t')
 
+control_1['5455178010_A.BEAD_STDERR'].mean()
+data = control_1['VALUE']
+
+import numpy as np
+
+data = np.array(data)
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+# Fit the scaler to the data and transform the data
+standardized_data = scaler.fit_transform(data)
 
 # Person 01
 C1_p = control_1['5455178010_A.Detection Pval']
@@ -33,4 +45,5 @@ T4_p = test_4['5522887032_F.Detection Pval']
 # Person 05
 C5_p = control_5['5522887032_E.Detection Pval'].mean()
 T5_p = test_5['5522887032_J.Detection Pval'].mean()
+
 

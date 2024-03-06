@@ -21,6 +21,6 @@ def weighted_p_list(p_values, weights=np.random.rand(len(p_values))):
 
     p_values = weighted_p_values
     return weight, p_values
-
+ 
 weighted_p = weighted_p_list(p_values)[1]
 
