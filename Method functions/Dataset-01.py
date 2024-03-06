@@ -8,6 +8,7 @@ from A03_FDR3_BY import BY_method
 
 from visualization import draw_histogram
 from visualization import sig_index_plot
+from visualization import draw_bar_chart
 
 import pandas as pd
 
@@ -32,8 +33,22 @@ P_STARR = df['p.value.STARR']
 
 ########################### For the full dataset #################################
 
-p_values = P_MPRA.values.astype(float)
-draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
+
+## plot 01 - Histograms
+p_valuesMPRA = P_MPRA.values.astype(float)
+draw_histogram(p_valuesMPRA, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
+
+p_valuesSTARR = P_STARR.values.astype(float)
+draw_histogram(p_valuesSTARR, bins=50, color='skyblue', edgecolor='navy', title='Histogram of STARR p_values', xlabel='Values', ylabel='Frequency')
+
+## Plot -2 - Barplot of type
+T_CRE = sum(df['Type']=="CRE")
+T_Random = sum(df['Type']=="Random")
+Total = T_CRE + T_Random
+
+draw_bar_chart(['CRE','Random'], [T_CRE,T_Random], title='Bar Chart of Type', xlabel='Type', ylabel='Frequency')
+
+
 
 ###################### Try 01 - Applying the methods #################################
 

@@ -16,9 +16,9 @@ def draw_histogram(data, bins=10, color='skyblue', edgecolor='black', title='His
     plt.hist(data, bins=bins, color=color, edgecolor=edgecolor)
 
     # Customize the chart
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    plt.title(title, fontname='Times New Roman')
+    plt.xlabel(xlabel,fontname='Times New Roman')
+    plt.ylabel(ylabel,fontname='Times New Roman')
 
     # Show the chart
     plt.show()
@@ -117,3 +117,25 @@ def group_line_plot(df_select, g_var,var1,var2):
     plt.grid(True)
     plt.legend()
     plt.show()
+
+
+def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', ylabel='Values'):
+    import matplotlib.pyplot as plt
+    """
+    Draw a bar chart using user-defined function.
+
+    Parameters:
+        categories (list): List of category labels.
+        values (list): List of corresponding values for each category.
+        title (str): Title of the chart (default is 'Bar Chart').
+        xlabel (str): Label for the x-axis (default is 'Categories').
+        ylabel (str): Label for the y-axis (default is 'Values').
+    """
+    colors = [plt.cm.viridis(120),plt.cm.viridis(50)]
+    plt.bar(categories, values, color=colors)
+    plt.title(title,fontname='Times New Roman')
+    plt.xlabel(xlabel,fontname='Times New Roman')
+    #plt.yticks(range(0, 110,10)) #for percentage
+    plt.ylabel(ylabel,fontname='Times New Roman')
+    plt.show()
+

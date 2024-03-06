@@ -6,7 +6,7 @@
 #  H0: p-values come from the same distribution 
 #  H1: p-values comes from two different distributions
 
-def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0.05,show_plot=False):
+def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0.05,show_plot=False,s0=1,s1=1):
     '''
     This is to create p-values from t-distribution & uniform distribution
     '''
@@ -20,12 +20,12 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     np.random.seed(seed)
     #Control Group Distribution
     m0 = 0
-    s0 = 1 
+    s0
     n0
 
     #Treatment Group Distribution
     m1 = effect
-    s1 = 1
+    s1 
     n1
 
     p_value_fire = []
@@ -64,7 +64,7 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     return p_values, significant_p, fire_index, nonfire_index
 
 #Simulating Dataset for 500 F and 9500 NF 
-sim1 = simulation_01(42,9000,1000,effect=0.5,n0=5,n1=5,threshold=0.05,show_plot=True)
+sim1 = simulation_01(42,5000,5000,effect=0.5,n0=5,n1=5,threshold=0.05,show_plot=True,s0=0.2,s1=0.2)
 p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
 
 
