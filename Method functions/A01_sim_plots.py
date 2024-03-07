@@ -80,8 +80,8 @@ import numpy as np
 
 # Define the parameters for the simulations
 seeds = [42, 42, 42, 42, 42, 42]  # Example seeds (replicated 6 times)
-num_firing = [5000, 5000, 5000, 2000, 2000, 2000]
-num_nonfire = [5000, 5000, 5000, 8000, 8000, 8000]
+num_firing = [500, 500, 500, 2000, 2000, 2000]
+num_nonfire = [9500, 9500, 9500, 8000, 8000, 8000]
 effects = [0.5, 1.0, 1.5, 0.5, 1.0, 1.5]  # Example effect sizes (replicated 6 times)
 n0_values = [30 for i in range(6)]  # Example n0 values (replicated 6 times)
 n1_values = [30 for i in range(6)]  # Example n1 values (replicated 6 times)
@@ -97,7 +97,7 @@ for i in range(6):  # Adjusted to iterate 6 times
     hist_data = [sim_data[2], sim_data[3]]  # Assuming the function returns a list containing p-values for firing and non-firing
     ax = axs[i // 3, i % 3]
     ax.hist(hist_data, bins=30, alpha=1, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'], edgecolor='midnightblue', stacked=True)
-    ax.set_title(f'(effect = {effects[i]} and pi0 = {len(sim_data[3])/len(sim_data[0])})', fontname='Times New Roman', fontsize=11)
+    ax.set_title(fr'(effect = {effects[i]} and $\pi_0$ = {len(sim_data[3])/len(sim_data[0])})', fontname='Times New Roman', fontsize=11)
     ax.set_xlabel('p-value', fontname='Times New Roman')
     ax.set_ylabel('Frequency', fontname='Times New Roman')
 
@@ -132,7 +132,7 @@ for i in range(6):  # Adjusted to iterate 6 times
     hist_data = [sim_data[2], sim_data[3]]  # Assuming the function returns a list containing p-values for firing and non-firing
     ax = axs[i // 3, i % 3]
     ax.hist(hist_data, bins=30, alpha=1, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'], edgecolor='midnightblue', stacked=True)
-    ax.set_title(f'(s0 = {s0_values[i]}, s1 = {s1_values[i]}, pi0 = {len(sim_data[3])/len(sim_data[0])})', fontname='Times New Roman', fontsize =11)
+    ax.set_title(fr'($S_0$ = {s0_values[i]}, $S_1$ = {s1_values[i]}, $\pi_0$ = {len(sim_data[3])/len(sim_data[0])})', fontname='Times New Roman', fontsize =11)
     ax.set_xlabel('p-value', fontname='Times New Roman')
     ax.set_ylabel('Frequency', fontname='Times New Roman')
 
