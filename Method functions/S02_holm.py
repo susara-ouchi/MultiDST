@@ -114,65 +114,83 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0=1):
     print(tabulate(data, headers=["Metric", "Value", "Std Dev"], tablefmt="grid"))
     print("\n---------------------------------------------\n")
 
-    # Appending values to the lists
-    n0_list.append(n0)
-    effect_list.append(effect)
-    s0_list.append(s0)
-    pi0_list.append(pi0)
-    power_list.append(power)
-    power_sd_list.append(sd)
-    fdr_list.append(fdr)
-    fdr_sd_list.append(fdr_sd)
-    accuracy_list.append(acc)
-    accuracy_sd_list.append(acc_sd)
-    fpr_list.append(fpr)
-    fpr_sd_list.append(fpr_sd)
-    f1_list.append(f1)
-    f1_sd_list.append(f1_sd)
-    print("Done!\n...")
+    return power,sd,fdr,fdr_sd,acc,acc_sd,fpr,fpr_sd,f1,f1_sd,n0,effect,pi0,s0
+
+from joblib import Parallel, delayed
+
 
 def power_sim_sample(num_simulations):
-    sample_size = [5,15,30] #[5,15,30]      # From Kang
+    sample_size = [5, 15, 30]  # From Kang
     print("\n---------------------------------------------\n")
-    for l in sample_size:
-        n0 = l
-        num_firing = [10000,9000,7500,5000] #[10000,9000,7500,5000, 3000]    # From BonEV
-        total_p = 10000
-        for k in num_firing:
-            num_firing = k
-            num_nonfire = total_p - k
-            pi0 = num_firing/total_p
-            effect_size = [0.1,0.3,0.5] #[0.05, 0.1, 0.3, 0.5]     # From SGoF
-            for j in effect_size:
-                effect= j
-                s0_size = [0.5,1]
-                for m in s0_size:
-                    s0 = m
-                    print(f"n0 = n1 = {n0}",
-                        f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0}",
-                        f"\neffect size: {effect}\ns0 = s1: {s0}\n...")
-                    power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0)
 
+    def process_parameters(n0, num_firing, num_nonfire, pi0, effect, s0):
+        print(f"n0 = n1 = {n0}",
+              f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0}",
+              f"\neffect size: {effect}\ns0 = s1: {s0}\n...")
+        return power_sim1(num_simulations, n0, num_firing, num_nonfire, effect, pi0, s0)
+
+    # Generate combinations of parameters
+    parameters = []
+    for n0 in sample_size:
+        for num_firing in [10000, 9000, 7500, 5000]:  # From BonEV
+            num_nonfire = 10000 - num_firing
+            pi0 = num_firing / 10000
+            for effect in [0.1, 0.3, 0.5]:  # From SGoF
+                for s0 in [0.5, 1]:
+                    parameters.append((n0, num_firing, num_nonfire, pi0, effect, s0))
+
+    # Execute simulations in parallel
+    results = Parallel(n_jobs=-1)(delayed(process_parameters)(*params) for params in parameters)
+    print(results)
+
+    # Process results
+    n0_list, effect_list, pi0_list, s0_list = [], [], [], []
+    power_list, power_sd_list = [], []
+    fdr_list, fdr_sd_list = [], []
+    accuracy_list, accuracy_sd_list = [], []
+    fpr_list, fpr_sd_list = [], []
+    f1_list, f1_sd_list = [], []
+
+    for result in results:
+        power, sd, fdr, fdr_sd, acc, acc_sd, fpr, fpr_sd, f1, f1_sd, n0, effect, pi0, s0 = result
+        n0_list.append(n0) 
+        effect_list.append(effect)
+        pi0_list.append(pi0) 
+        s0_list.append(s0) 
+        power_list.append(power)
+        power_sd_list.append(sd)
+        fdr_list.append(fdr)
+        fdr_sd_list.append(fdr_sd)
+        accuracy_list.append(acc)
+        accuracy_sd_list.append(acc_sd)
+        fpr_list.append(fpr)
+        fpr_sd_list.append(fpr_sd)
+        f1_list.append(f1)
+        f1_sd_list.append(f1_sd)
+
+    print("Done!\n...")
+    return n0_list,effect_list,pi0_list,s0_list,power_list,power_sd_list ,fdr_list,fdr_sd_list,accuracy_list,accuracy_sd_list ,fpr_list,fpr_sd_list,f1_list,f1_sd_list 
 
 t1 = time.time()
 #results = [math.factorial(x) for x in range(10000)]
-results = Parallel(n_jobs=-1)(power_sim_sample(num_simulations=50))
+results = power_sim_sample(1)
+results
 t2 = time.time()
 
-n0_list
-effect_list
-pi0_list
-s0_list
-power_list
-power_sd_list 
-fdr_list
-fdr_sd_list
-accuracy_list
-accuracy_sd_list 
-fpr_list
-fpr_sd_list
-f1_list
-f1_sd_list 
+n0_list = results[0]
+effect_list = results[1]
+pi0_list = results[2]
+s0_list = results[3]
+power_list = results[4]
+power_sd_list = results[5]
+fdr_list = results[6]
+fdr_sd_list = results[7]
+accuracy_list = results[8]
+accuracy_sd_list = results[9] 
+fpr_list = results[10]
+fpr_sd_list = results[11]
+f1_list = results[12]
+f1_sd_list = results[13]
 
 # Create a DataFrame
 import pandas as pd

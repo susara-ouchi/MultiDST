@@ -57,39 +57,38 @@ def simulation_01_plots(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,thres
 sim1 = simulation_01_plots(42,9000,1000,effect=0.5,n0=5,n1=5,threshold=0.05)
 p_values, significant_p, p_value_fire,p_value_nonfire, effect = sim1[0],sim1[1],sim1[2],sim1[3], sim1[4]
 
-
 import matplotlib.pyplot as plt
 import numpy as np
 
 #Creating the plot
-sim1 = simulation_01_plots(42,5000,5000,effect=0.5,n0=5,n1=5,threshold=0.05, s0=0.1,s1=0.1)
-p_values, significant_p, p_value_fire,p_value_nonfire, effect = sim1[0],sim1[1],sim1[2],sim1[3], sim1[4]
+# sim1 = simulation_01_plots(42,5000,5000,effect=0.5,n0=5,n1=5,threshold=0.05, s0=1,s1=1)
+# p_values, significant_p, p_value_fire,p_value_nonfire, effect = sim1[0],sim1[1],sim1[2],sim1[3], sim1[4]
 
-hist_data = [p_value_fire, p_value_nonfire]
-plt.hist(hist_data, bins=30,alpha=1, label = ['firing','non-firing'],color=['steelblue','greenyellow'],edgecolor='black',stacked=True)
-plt.title(f'Distribution of uncorrected p-values for \n(effect = {effect} and pi0 = {len(p_value_fire)/len(p_values)})',fontname='Times New Roman')
-plt.xlabel('p-value',fontname='Times New Roman')
-plt.ylabel('Frequency',fontname='Times New Roman')
-plt.legend()
-plt.show()
+# hist_data = [p_value_fire, p_value_nonfire]
+# plt.hist(hist_data, bins=30,alpha=1, label = ['firing','non-firing'],color=['steelblue','greenyellow'],edgecolor='black',stacked=True)
+# plt.title(f'Distribution of uncorrected p-values for \n(effect = {effect} and pi0 = {len(p_value_nonfire)/len(p_values)})',fontname='Times New Roman')
+# plt.xlabel('p-value',fontname='Times New Roman')
+# plt.ylabel('Frequency',fontname='Times New Roman')
+# plt.legend()
+# plt.show()
 
 
-simulation_01_plots(42,9000,1000,effect=0.5,n0=5,n1=5,threshold=0.05)
+# simulation_01_plots(42,9000,1000,effect=0.5,n0=5,n1=5,threshold=0.05)
 
 
 ### Plot 01 - Histograms over effect and pi0
 
 # Define the parameters for the simulations
 seeds = [42, 42, 42, 42, 42, 42]  # Example seeds (replicated 6 times)
-num_firing = [5000, 5000, 5000, 9000, 9000, 9000]
-num_nonfire = [5000, 5000, 5000, 1000, 1000, 1000]
-effects = [0.1, 0.3, 0.5, 0.1, 0.3, 0.5]  # Example effect sizes (replicated 6 times)
+num_firing = [5000, 5000, 5000, 2000, 2000, 2000]
+num_nonfire = [5000, 5000, 5000, 8000, 8000, 8000]
+effects = [0.5, 1.0, 1.5, 0.5, 1.0, 1.5]  # Example effect sizes (replicated 6 times)
 n0_values = [30 for i in range(6)]  # Example n0 values (replicated 6 times)
 n1_values = [30 for i in range(6)]  # Example n1 values (replicated 6 times)
 threshold = 0.05
 
 # Create subplots with adjusted spacing
-fig, axs = plt.subplots(2, 3, figsize=(10, 6))  # Adjusted to accommodate 6 plots in a (2, 3) grid
+fig, axs = plt.subplots(2, 3, figsize=(10,6))  # Adjusted to accommodate 6 plots in a (2, 3) grid
 plt.subplots_adjust(hspace=0.5, wspace=1.5)  # Adjust vertical and horizontal spacing between subplots
 
 # Iterate over the parameters and generate plots
@@ -98,10 +97,12 @@ for i in range(6):  # Adjusted to iterate 6 times
     hist_data = [sim_data[2], sim_data[3]]  # Assuming the function returns a list containing p-values for firing and non-firing
     ax = axs[i // 3, i % 3]
     ax.hist(hist_data, bins=30, alpha=1, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'], edgecolor='midnightblue', stacked=True)
-    ax.set_title(f'Distribution of uncorrected p-values for\n(effect = {effects[i]} and pi0 = {len(sim_data[2])/len(sim_data[0])})', fontname='Times New Roman', fontsize=11)
+    ax.set_title(f'(effect = {effects[i]} and pi0 = {len(sim_data[3])/len(sim_data[0])})', fontname='Times New Roman', fontsize=11)
     ax.set_xlabel('p-value', fontname='Times New Roman')
     ax.set_ylabel('Frequency', fontname='Times New Roman')
-    ax.legend()
+
+fig.legend(labels=['firing', 'non-firing'], loc='upper right', bbox_to_anchor=(0.98, 0.95))
+#fig.suptitle('Distribution of uncorrected p-values over effect size',x=0.52, fontsize=14, fontweight='bold',fontname='Times New Roman')
 
 # Adjust layout
 plt.tight_layout()
@@ -110,11 +111,10 @@ plt.show()
 
 ### Plot 02 - Histograms over standard deviations and pi0
 
-
 # Define the parameters for the simulations
 seeds = [42, 42, 42] * 2  
-num_firing = [5000, 5000, 5000, 9500, 9500, 9500] 
-num_nonfire = [5000, 5000, 5000, 500, 500, 500]
+num_firing = [5000, 5000, 5000, 2000, 2000, 2000] 
+num_nonfire = [5000, 5000, 5000, 8000, 8000, 8000]
 effects = [0.5, 0.5, 0.5] * 2  # Example effect sizes (replicated 6 times)
 n0_values = [30] * 6  # Example n0 values (replicated 6 times)
 n1_values = [30] * 6  # Example n1 values (replicated 6 times)
@@ -132,10 +132,12 @@ for i in range(6):  # Adjusted to iterate 6 times
     hist_data = [sim_data[2], sim_data[3]]  # Assuming the function returns a list containing p-values for firing and non-firing
     ax = axs[i // 3, i % 3]
     ax.hist(hist_data, bins=30, alpha=1, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'], edgecolor='midnightblue', stacked=True)
-    ax.set_title(f'Distribution of uncorrected p-values\n(s0 = {s0_values[i]}, s1 = {s1_values[i]}, pi0 = {len(sim_data[2])/len(sim_data[0])})', fontname='Times New Roman', fontsize =11)
+    ax.set_title(f'(s0 = {s0_values[i]}, s1 = {s1_values[i]}, pi0 = {len(sim_data[3])/len(sim_data[0])})', fontname='Times New Roman', fontsize =11)
     ax.set_xlabel('p-value', fontname='Times New Roman')
     ax.set_ylabel('Frequency', fontname='Times New Roman')
-    ax.legend()
+
+fig.legend(labels=['firing', 'non-firing'], loc='upper right', bbox_to_anchor=(0.98, 0.95))
+#fig.suptitle('Distribution of uncorrected p-values over variability',x=0.52, fontsize=14, fontweight='bold',fontname='Times New Roman')
 
 # Adjust layout
 plt.tight_layout()

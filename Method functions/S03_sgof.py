@@ -136,16 +136,16 @@ def power_sim_sample(num_simulations):
     print("\n---------------------------------------------\n")
     for l in sample_size:
         n0 = l
-        num_firing = [10000,9000,7500,5000] #[10000,9000,7500,5000, 3000]    # From BonEV
+        num_firing = [10000] #[10000,9000,7500,5000, 3000]    # From BonEV
         total_p = 10000
         for k in num_firing:
             num_firing = k
             num_nonfire = total_p - k
             pi0 = num_firing/total_p
-            effect_size = [0.1,0.3,0.5] #[0.05, 0.1, 0.3, 0.5]     # From SGoF
+            effect_size = [0.1] #[0.05, 0.1, 0.3, 0.5]     # From SGoF
             for j in effect_size:
                 effect= j
-                s0_size = [0.5,1]
+                s0_size = [0.5]
                 for m in s0_size:
                     s0 = m
                     print(f"n0 = n1 = {n0}",
@@ -156,7 +156,7 @@ def power_sim_sample(num_simulations):
 
 t1 = time.time()
 #results = [math.factorial(x) for x in range(10000)]
-results = Parallel(n_jobs=-1)(power_sim_sample(num_simulations=50))
+results = Parallel(n_jobs=-1)(power_sim_sample(num_simulations=1))
 t2 = time.time()
 
 n0_list

@@ -40,4 +40,4 @@ sgof_p, sig_sgof_p = sgof_results[0], sgof_results[1]
 sgof_p
 sig_sgof_p
 len(sig_sgof_p)
-
+len(sgof_p)
