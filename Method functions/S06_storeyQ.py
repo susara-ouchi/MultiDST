@@ -1,4 +1,4 @@
-#################### SGoF Simulation ##################################
+#################### Storey's Q Simulation ##################################
 
 # Simulating from Independent samples t-test #
 
@@ -16,7 +16,7 @@ from joblib import Parallel, delayed
 
 ###################################### Simulation distribution loading ###########################################
 from A01_sim_data import simulation_01
-from A02_FWER5_sgof import sgof_test
+from A03_FDR2_qval import q_value
 
 ####################################### Sim eval ##############################################
 
@@ -59,8 +59,8 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0=1):
         sim1 = simulation_01(seed,num_firing,num_nonfire,effect,n0,n1,threshold=0.05,show_plot=False, s0=s0, s1=s1)
         p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
         #significant p-values from method
-        adj_p = sgof_test(p_values, alpha=0.05, weights = False)[0]
-        significant_p = sgof_test(p_values, alpha=0.05, weights = False)[1]
+        adj_p = q_value(p_values, alpha=0.05, weights = False)[0]
+        significant_p = q_value(p_values, alpha=0.05, weights = False)[1]
         sim_eval_res = sim_eval(adj_p, significant_p, fire_index, nonfire_index,p_values, threshold=0.05)
         sig_fire = sim_eval_res[1]
         sig_nonfire = sim_eval_res[2]
@@ -246,11 +246,11 @@ data = {
     'F1 SD': f1_sd_list
 }
 
-df_sgof = pd.DataFrame(data)
+df_storey = pd.DataFrame(data)
 
 # Print the DataFrame
-print(df_sgof)
+print(df_storey)
 print(t2-t1)
 
-df_sgof.to_csv('MultiDST/Simulated datasets/sgof_sim_results.csv', index=False)
+df_storey.to_csv('MultiDST/Simulated datasets/storeyQ_sim_results.csv', index=False)
 

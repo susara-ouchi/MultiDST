@@ -1,89 +1,86 @@
-from A01_weighting import weighted_p_list
-from A02_FWER1_bonferroni import bonferroni
-from A02_FWER3_holm import holm
-from A02_FWER5_sgof import sgof_test
-from A03_FDR1_bh import bh_method
-from A03_FDR2_qval import q_value
-from A03_FDR3_BY import BY_method
+from utils.weighting import weighted_p_list
+from MultiDST.bonferroni import bonferroni
+from MultiDST.holm import holm
+from MultiDST.sgof import sgof_test
+from MultiDST.BH import bh_method
+from MultiDST.qval import q_value
+from MultiDST.BY import BY_method
 
-from visualization import draw_histogram
-from visualization import sig_index_plot
-from visualization import draw_bar_chart
+from utils.visualization import draw_histogram
+from utils.visualization import sig_index_plot
+from utils.visualization import draw_bar_chart
 
 import pandas as pd
+# Opening each dataset
+control_1 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_1.tsv', sep='\t')
+control_2 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_2.tsv', sep='\t')
+control_3 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_3.tsv', sep='\t')
+control_4 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_4.tsv', sep='\t')
+control_5 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/control_4.tsv', sep='\t')
+test_1 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_1.tsv', sep='\t')
+test_2 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_2.tsv', sep='\t')
+test_3 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_3.tsv', sep='\t')
+test_4 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_4.tsv', sep='\t')
+test_5 = pd.read_csv('MultiDST/MultiDST - Real-dataset-2-paired/test_5.tsv', sep='\t')
 
-# Opening the file in read mode
- 
-with open('MultiDST/MultiDST - Real Dataset/experimental_pvalues.txt', 'r') as file:
-    # Read the entire content of the file
-    content = file.read()
 
-# Split the content into lines
-lines = content.splitlines()
+# Person 01
+C1_p = control_1['5455178010_A.Detection Pval']
+T1_p = test_1['5455178010_B.Detection Pval']
 
-# Split each line into columns (assuming a space delimiter)
-table_data = [line.split() for line in lines]
-colnames = lines[0].split()
+# Person 02
+C2_p = control_2['5455178010_E.Detection Pval']
+T2_p = test_2['5455178010_F.Detection Pval']
 
-# Create a DataFrame using pandas
-df = pd.DataFrame(table_data[1:], columns=colnames)
+# Person 03
+C3_p = control_3['5455178010_I.Detection Pval']
+T3_p = test_3['5455178010_J.Detection Pval']
 
-P_MPRA = df['p.value.MPRA']
-P_STARR = df['p.value.STARR']
+# Person 04
+C4_p = control_4['5522887032_E.Detection Pval']
+T4_p = test_4['5522887032_F.Detection Pval']
+
+# Person 05
+C5_p = control_5['5522887032_E.Detection Pval']
+T5_p = test_5['5522887032_J.Detection Pval']
+
 
 ########################### For the full dataset #################################
 
-## plot 01 - Histograms
-p_valuesMPRA = P_MPRA.values.astype(float)
-draw_histogram(p_valuesMPRA, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
-
-p_valuesSTARR = P_STARR.values.astype(float)
-draw_histogram(p_valuesSTARR, bins=50, color='skyblue', edgecolor='navy', title='Histogram of STARR p_values', xlabel='Values', ylabel='Frequency')
-
-## Plot -2 - Barplot of type
-T_CRE = sum(df['Type']=="CRE")
-T_Random = sum(df['Type']=="Random")
-Total = T_CRE + T_Random
-
-draw_bar_chart(['CRE','Random'], [T_CRE,T_Random], title='Bar Chart of Type', xlabel='Type', ylabel='Frequency')
-
-p_values = p_valuesSTARR
+p_values = C1_p
+draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
+ 
 ###################### Try 01 - Applying the methods #################################
 
 # 0 - Uncorrected
 sig_index = [index for index,p in enumerate(p_values) if p < 0.05]
 len(sig_index)
-sig_index_plot(p_values, sig_index)
+non_sig_index = [index for index,p in enumerate(p_values) if p >= 0.05]
+sig_index_plot(sig_index,non_sig_index)
 
 # 1 - Bonferroni
 bonf_results = bonferroni(p_values,alpha=0.05, weights = False)
 bonf_p, sig_bonf_p = bonf_results[0], bonf_results[1]
-sig_index_plot(p_values, sig_bonf_p)
 
 # 2 - Holm
 holm_results = holm(p_values,alpha=0.05, weights = False)
 holm_p, sig_holm_p = holm_results[0], holm_results[1]
-sig_index_plot(p_values, sig_holm_p)
 
 # 3 - SGoF
 sgof_results = sgof_test(p_values,alpha=0.05, weights = False)
 sgof_p, sig_sgof_p = sgof_results[0], sgof_results[1]
-sig_index_plot(p_values, sig_sgof_p)
 
 # 4 - BH
 bh_results = bh_method(p_values,alpha=0.05, weights = False)
 bh_p, sig_bh_p = bh_results[0], bh_results[1]
-sig_index_plot(p_values, sig_bh_p)
 
 # 5 - BY
 by_results = BY_method(p_values,alpha=0.05, weights = False)
 by_p, sig_by_p = by_results[0], by_results[1]
-sig_index_plot(p_values, sig_by_p)
 
 # 6 - Qval
 q_results = q_value(p_values,alpha=0.05, weights = False)
 q, sig_q = q_results[0], q_results[1]
-sig_index_plot(p_values, sig_q)
 
 print("Uncorrected: ",len(sig_index),
       "\nBonferroni:",len(sig_bonf_p),
@@ -93,12 +90,12 @@ print("Uncorrected: ",len(sig_index),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
 
-############################# Shortlisting p values - Remove Bonferroni ########################
+############################# Shortlisting p values ########################
 
 p_values2 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_bonf_p]
 p_values = p_values2
-
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
+
 
 ###################### Try 02 -  Applying the methods #################################
 
@@ -143,7 +140,6 @@ print("Uncorrected: ",len(sig_index),
 
 p_values3 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_q]
 p_values = p_values3
-
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 02 -  Applying the methods #################################
@@ -188,7 +184,6 @@ print("Uncorrected: ",len(sig_index),
 
 p_values4 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_sgof_p]
 p_values = p_values4
-
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 02 -  Applying the methods #################################
@@ -234,7 +229,6 @@ print("Uncorrected: ",len(sig_index),
 
 p_values5 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_sgof_p]
 p_values = p_values5
-
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
 
 ###################### Try 02 -  Applying the methods #################################
@@ -274,7 +268,6 @@ print("Uncorrected: ",len(sig_index),
       "\nBH",len(sig_bh_p),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
-
 
 # Now that all the methods have shortlisted the p-values, take a look at the uncorrected ones
 [p_values5[i] for i in sig_index]

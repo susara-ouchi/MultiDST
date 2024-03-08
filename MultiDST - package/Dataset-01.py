@@ -1,14 +1,16 @@
-from A01_weighting import weighted_p_list
-from A02_FWER1_bonferroni import bonferroni
-from A02_FWER3_holm import holm
-from A02_FWER5_sgof import sgof_test
-from A03_FDR1_bh import bh_method
-from A03_FDR2_qval import q_value
-from A03_FDR3_BY import BY_method
 
-from visualization import draw_histogram
-from visualization import sig_index_plot
-from visualization import draw_bar_chart
+
+from utils.weighting import weighted_p_list
+from MultiDST.bonferroni import bonferroni
+from MultiDST.holm import holm
+from MultiDST.sgof import sgof_test
+from MultiDST.BH import bh_method
+from MultiDST.qval import q_value
+from MultiDST.BY import BY_method
+
+from utils.visualization import draw_histogram
+from utils.visualization import sig_index_plot
+from utils.visualization import draw_bar_chart
 
 import pandas as pd
 
