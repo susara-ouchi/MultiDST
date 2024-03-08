@@ -53,7 +53,7 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0=1):
 
     for i in range(num_simulations): 
         seed = i
-        sim_result = simulation_01(seed,num_firing,num_nonfire,effect,n0,n1,threshold=0.05,show_plot=False, s0=1, s1=1)
+        sim_result = simulation_01(seed,num_firing,num_nonfire,effect,n0,n1,threshold=0.05,show_plot=False, s0=s0, s1=s1)
         #significant p-values from method
         p_values = sim_result[0]
         significant_p_index = sim_result[1]
@@ -172,7 +172,7 @@ def power_sim_sample(num_simulations):
 
 t1 = time.time()
 #results = [math.factorial(x) for x in range(10000)]
-results = power_sim_sample(1)
+results = power_sim_sample(100)
 results
 t2 = time.time()
 

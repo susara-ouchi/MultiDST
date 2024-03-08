@@ -44,7 +44,7 @@ accuracy_list, accuracy_sd_list = [],[]
 fpr_list, fpr_sd_list =[],[]
 f1_list, f1_sd_list = [],[]
 
-def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0=1):
+def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0):
     import pandas as pd
     n1 = n0
     s1 = s0
@@ -56,7 +56,7 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0=1):
 
     for i in range(num_simulations): 
         seed = i
-        sim1 = simulation_01(seed,num_firing,num_nonfire,effect,n0,n1,threshold=0.05,show_plot=False, s0=1, s1=1)
+        sim1 = simulation_01(seed,num_firing,num_nonfire,effect,n0,n1,threshold=0.05,show_plot=False, s0=s0, s1=s1)
         p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
         #significant p-values from method
         adj_p = bonferroni(p_values, alpha=0.05, weights = False)[0]
@@ -73,7 +73,7 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0=1):
         TN = p_nonfire - FP
         FN = p_fire - TP
 
-        # Calculate sensitivity (True Positive Rate)
+        # Calculate sensitivity (True Positive Rate / Power)
         if TP + FN == 0:
             sensitivity = 0  # If there are no actual positive cases, sensitivity is 0
         else:
@@ -164,7 +164,7 @@ def power_sim_sample(num_simulations):
     # Generate combinations of parameters
     parameters = []
     for n0 in sample_size:
-        for num_firing in [1000, 2500, 5000, 7500]:  # From BonEV
+        for num_firing in [1000, 2500, 5000]:  # From BonEV
             num_nonfire = 10000 - num_firing
             pi0 = num_nonfire / 10000
             for effect in [0.5, 1.0, 1.5]:  # From SGoF
@@ -187,7 +187,7 @@ def power_sim_sample(num_simulations):
         power, sd, fdr, fdr_sd, acc, acc_sd, fpr, fpr_sd, f1, f1_sd, n0, effect, pi0, s0 = result
         n0_list.append(n0) 
         effect_list.append(effect)
-        pi0_list.append(pi0) 
+        pi0_list.append(1-pi0) 
         s0_list.append(s0) 
         power_list.append(power)
         power_sd_list.append(sd)
@@ -205,7 +205,7 @@ def power_sim_sample(num_simulations):
 
 t1 = time.time()
 #results = [math.factorial(x) for x in range(10000)]
-results = power_sim_sample(1)
+results = power_sim_sample(100)
 results
 t2 = time.time()
 
@@ -229,7 +229,7 @@ import pandas as pd
 
 data = {
     'n0': n0_list,
-    'Pi0': pi0_list,
+    '1-Pi0': pi0_list,  #to get non null proportion
     'Effect': effect_list,
     'S0':s0_list,
     'Power': power_list,
@@ -252,4 +252,4 @@ df_bonferroni= pd.DataFrame(data)
 print(df_bonferroni)
 print(t2-t1)
 
-#df_bonferroni.to_csv('MultiDST/Simulated datasets/bonferroni_sim_results.csv', index=False)
+df_bonferroni.to_csv('MultiDST/Simulated datasets/bonferroni_sim_results.csv', index=False)
