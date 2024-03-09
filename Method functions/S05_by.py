@@ -207,7 +207,7 @@ def power_sim_sample(num_simulations):
 
 t1 = time.time()
 #results = [math.factorial(x) for x in range(10000)]
-results = power_sim_sample(50)
+results = power_sim_sample(30)
 results
 t2 = time.time()
 

@@ -80,8 +80,8 @@ import numpy as np
 
 # Define the parameters for the simulations
 seeds = [42, 42, 42, 42, 42, 42]  # Example seeds (replicated 6 times)
-num_firing = [500, 500, 500, 2000, 2000, 2000]
-num_nonfire = [9500, 9500, 9500, 8000, 8000, 8000]
+num_firing = [1000, 1000, 1000, 2500, 2500, 2500]
+num_nonfire = [9000, 9000, 9000, 7500, 7500, 7500]
 effects = [0.5, 1.0, 1.5, 0.5, 1.0, 1.5]  # Example effect sizes (replicated 6 times)
 n0_values = [30 for i in range(6)]  # Example n0 values (replicated 6 times)
 n1_values = [30 for i in range(6)]  # Example n1 values (replicated 6 times)
@@ -114,12 +114,12 @@ plt.show()
 # Define the parameters for the simulations
 seeds = [42, 42, 42] * 2  
 num_firing = [5000, 5000, 5000, 2000, 2000, 2000] 
-num_nonfire = [5000, 5000, 5000, 8000, 8000, 8000]
-effects = [0.5, 0.5, 0.5] * 2  # Example effect sizes (replicated 6 times)
-n0_values = [30] * 6  # Example n0 values (replicated 6 times)
-n1_values = [30] * 6  # Example n1 values (replicated 6 times)
-s0_values = [0.2, 0.5, 1, 0.2, 0.5, 1]  # Example n0 values (replicated 6 times)
-s1_values = [0.2, 0.5, 1, 0.2, 0.5, 1]  # Example n1 values (replicated 6 times)
+num_nonfire = [5000, 5000, 5000, 5000, 5000, 5000]
+effects = [0.5, 1.0, 1.5] * 2  # Example effect sizes (replicated 6 times)
+n0_values = [15,15,15,15,5,15]   # Example n0 values (replicated 6 times)
+n1_values = [15,15,15,15,15,15]  # Example n1 values (replicated 6 times)
+s0_values = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # Example n0 values (replicated 6 times)
+s1_values = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # Example n1 values (replicated 6 times)
 threshold = 0.05
 
 # Create subplots with adjusted spacing
@@ -132,7 +132,7 @@ for i in range(6):  # Adjusted to iterate 6 times
     hist_data = [sim_data[2], sim_data[3]]  # Assuming the function returns a list containing p-values for firing and non-firing
     ax = axs[i // 3, i % 3]
     ax.hist(hist_data, bins=30, alpha=1, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'], edgecolor='midnightblue', stacked=True)
-    ax.set_title(fr'($S_0$ = {s0_values[i]}, $S_1$ = {s1_values[i]}, $\pi_0$ = {len(sim_data[3])/len(sim_data[0])})', fontname='Times New Roman', fontsize =11)
+    ax.set_title(fr'($n_0$ = {n0_values[i]}, $n_1$ = {n1_values[i]}, $S_0$ = {s0_values[i]}, $S_1$ = {s1_values[i]})', fontname='Times New Roman', fontsize =11)
     ax.set_xlabel('p-value', fontname='Times New Roman')
     ax.set_ylabel('Frequency', fontname='Times New Roman')
 
@@ -141,4 +141,41 @@ fig.legend(labels=['firing', 'non-firing'], loc='upper right', bbox_to_anchor=(0
 
 # Adjust layout
 plt.tight_layout()
+plt.show()
+
+
+### Plot 03 - For reduced conditions
+
+
+
+# Define the parameters for the simulations
+seeds = [42, 42, 42, 42]  
+num_firing = [5000, 5000, 5000, 2000]
+num_nonfire = [5000, 5000, 5000, 8000]
+effects = [0.5, 0.5, 0.5, 0.5]  
+n0_values = [5,5,15,15]
+n1_values = [15,15,5,5]  
+s0_values = [0.5, 1.0, 1, 0.2]
+s1_values = [0.2, 0.5, 1, 0.2]
+threshold = 0.05
+
+# Create subplots with adjusted spacing
+fig, axs = plt.subplots(2, 2, figsize=(10, 8))  # Adjusted to accommodate 4 plots in a (2, 2) grid
+plt.subplots_adjust(hspace=0.5, wspace=0.3)  # Adjust vertical and horizontal spacing between subplots
+
+# Iterate over the parameters and generate plots
+for i in range(4):  # Adjusted to iterate 4 times
+    sim_data = simulation_01_plots(seeds[i], num_firing[i], num_nonfire[i], effects[i], n0_values[i], n1_values[i], threshold, s0=s0_values[i], s1=s1_values[i])
+    hist_data = [sim_data[2], sim_data[3]]  # Assuming the function returns a list containing p-values for firing and non-firing
+    ax = axs[i // 2, i % 2]
+    ax.hist(hist_data, bins=30, alpha=0.7, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'], edgecolor='midnightblue', stacked=True)
+    ax.set_title(fr'$S_0$ = {s0_values[i]}, $S_1$ = {s1_values[i]}, $\pi_0$ = {len(sim_data[3])/len(sim_data[0])}', fontname='Times New Roman', fontsize=11)
+    ax.set_xlabel('p-value', fontname='Times New Roman')
+    ax.set_ylabel('Frequency', fontname='Times New Roman')
+    ax.legend()
+
+fig.suptitle('Distribution of uncorrected p-values over variability', fontsize=14, fontweight='bold', fontname='Times New Roman')
+
+# Adjust layout
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.show()

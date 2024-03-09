@@ -2,6 +2,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.linear_model import LogisticRegression
+import numpy as np
 from A05_ML_df import p_val_df
 
 # Load dataset 

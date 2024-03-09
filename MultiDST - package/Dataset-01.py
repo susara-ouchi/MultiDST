@@ -14,8 +14,8 @@ from utils.visualization import draw_bar_chart
 
 import pandas as pd
 
+
 # Opening the file in read mode
- 
 with open('MultiDST/MultiDST - Real Dataset/experimental_pvalues.txt', 'r') as file:
     # Read the entire content of the file
     content = file.read()
@@ -33,21 +33,32 @@ df = pd.DataFrame(table_data[1:], columns=colnames)
 P_MPRA = df['p.value.MPRA']
 P_STARR = df['p.value.STARR']
 
-########################### For the full dataset #################################
+###################################### For the full dataset #################################
 
 ## plot 01 - Histograms
+import matplotlib.pyplot as plt
 p_valuesMPRA = P_MPRA.values.astype(float)
-draw_histogram(p_valuesMPRA, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
-
 p_valuesSTARR = P_STARR.values.astype(float)
-draw_histogram(p_valuesSTARR, bins=50, color='skyblue', edgecolor='navy', title='Histogram of STARR p_values', xlabel='Values', ylabel='Frequency')
+
+# Create subplots with 1 row and 2 columns
+fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+axs[0].hist(p_valuesMPRA, bins=50, color='skyblue', edgecolor='navy')
+axs[0].set_title('Histogram of MPRA p-values')
+axs[0].set_xlabel('Values')
+axs[0].set_ylabel('Frequency')
+axs[1].hist(p_valuesSTARR, bins=50, color='skyblue', edgecolor='navy', alpha=0.7)
+axs[1].set_title('Histogram of STARR p-values')
+axs[1].set_xlabel('Values')
+axs[1].set_ylabel('Frequency')
+plt.tight_layout()
+plt.show()
 
 ## Plot -2 - Barplot of type
 T_CRE = sum(df['Type']=="CRE")
 T_Random = sum(df['Type']=="Random")
 Total = T_CRE + T_Random
 
-draw_bar_chart(['CRE','Random'], [T_CRE,T_Random], title='Bar Chart of Type', xlabel='Type', ylabel='Frequency')
+draw_bar_chart(['CRE','Random'], [T_CRE,T_Random], title=' ' , xlabel='Type of element', ylabel='Frequency', border_color='grey')
 
 p_values = p_valuesSTARR
 ###################### Try 01 - Applying the methods #################################

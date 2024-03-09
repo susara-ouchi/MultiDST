@@ -21,7 +21,18 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     from scipy.stats import _mannwhitneyu
     np.random.seed(seed)
 
+        # Generate random samples from null (uniform) and alternative distributions
+    null_samples = np.random.uniform(low=0, high=1, size=(num_samples, sample_size))
+    alternative_samples = np.random.gamma(shape=2, scale=1, size=(num_samples, sample_size))  # Example: Gamma distribution
+
+    # Perform Mann-Whitney U test and calculate p-values
+    p_values = []
+    for null_sample, alt_sample in zip(null_samples, alternative_samples):
+        _, p_value = mannwhitneyu(null_sample, alt_sample, alternative='two-sided')
+        p_values.append(p_value)
+
     # Control Group Distribution
+    control_group = np.random.normal(loc=0, scale=s0, size=(n0, num_firing))
     control_group = np.random.normal(loc=0, scale=s0, size=(n0, num_firing))
 
     # Treatment Group Distribution

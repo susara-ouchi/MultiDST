@@ -136,7 +136,8 @@ def power_sim_sample(num_simulations):
             pi0 = num_firing / 10000
             for effect in [0.5]: #[0.1, 0.3, 0.5]:  # From SGoF
                 for s0 in [0.5]: #[0.5, 1]:
-                    parameters.append((n0, num_firing, num_nonfire, pi0, effect, s0))
+                    for s1 in [0.5]:
+                        parameters.append((n0, num_firing, num_nonfire, pi0, effect, s0, s1))
 
     # Execute simulations in parallel
     results = Parallel(n_jobs=-1)(delayed(process_parameters)(*params) for params in parameters)

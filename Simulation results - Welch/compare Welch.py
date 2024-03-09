@@ -7,14 +7,15 @@ from visualization import plot_roc
 from visualization import plot_radar_plots
 
 ### 00 - Loading the datasets
-uncorrected_df = pd.read_csv(r'MultiDST\Simulated datasets 1\uncorrected_sim_results.csv')
-bonferroni_df = pd.read_csv(r'MultiDST\Simulated datasets 1\bonferroni_sim_results.csv')
-holm_df = pd.read_csv(r'MultiDST\Simulated datasets 1\holm_sim_results.csv')
-sgof_df = pd.read_csv(r'MultiDST\Simulated datasets 1\sgof_sim_results.csv')
-BH_df = pd.read_csv(r'MultiDST\Simulated datasets 1\bh_sim_results.csv')
-BY_df = pd.read_csv(r'MultiDST\Simulated datasets 1\by_sim_results.csv')
-storey_df =pd.read_csv(r'MultiDST\Simulated datasets 1\storeyQ_sim_results.csv')
-all_df = pd.read_csv(r'MultiDST\Simulated datasets 1\all_df.csv')
+### 00 - Loading the datasets
+uncorrected_df = pd.read_csv(r'MultiDST\Simulated datasets 2\uncorrected_sim_results.csv')
+bonferroni_df = pd.read_csv(r'MultiDST\Simulated datasets 2\bonferroni_sim_results.csv')
+holm_df = pd.read_csv(r'MultiDST\Simulated datasets 2\holm_sim_results.csv')
+sgof_df = pd.read_csv(r'MultiDST\Simulated datasets 2\sgof_sim_results.csv')
+BH_df = pd.read_csv(r'MultiDST\Simulated datasets 2\bh_sim_results.csv')
+BY_df = pd.read_csv(r'MultiDST\Simulated datasets 2\by_sim_results.csv')
+storey_df =pd.read_csv(r'MultiDST\Simulated datasets 2\storeyQ_sim_results.csv')
+all_df =pd.read_csv(r'MultiDST\Simulated datasets 2\all_df_3.csv')
 
 ### 01 - Setting up dataframes
 def get_mean_power_values(df, group_by1, group_by2, num_groups1,num_groups2, val='Power'):
@@ -39,7 +40,7 @@ def get_mean_power_values(df, group_by1, group_by2, num_groups1,num_groups2, val
     return power_list
 
 df = [bonferroni_df, holm_df, sgof_df, BH_df, BY_df, storey_df]
-get_mean_power_values(df[0], 'n0', 'Effect', 3,3)
+get_mean_power_values(df[0], 'n0', 'Effect', 2,3)
 
 # Methods used
 methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
@@ -48,7 +49,7 @@ methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
 
 power_f = []
 for i in range(len(df)):
-    power_list = get_mean_power_values(df[i], 'n0', 'Effect', 3,3)
+    power_list = get_mean_power_values(df[i], 'n0', 'Effect', 2,3)
     power_f.append(power_list)
 power_f
 
@@ -68,7 +69,7 @@ powers_n2 = power_f2[2]
 titles =[r'$n = 5$', r'$n = 15$', r'$n = 30$']
 x_labels = ['Effect size','Effect size','Effect size']
 y_labels = ['Power','Power','Power']
-plot_power_effect(methods, effect_sizes, powers_n0, powers_n1, powers_n2, titles=titles, x_labels=x_labels,y_labels=y_labels)
+plot_power_effect(methods, effect_sizes, powers_n0, powers_n1, titles=titles, x_labels=x_labels,y_labels=y_labels)
 
 
 ### 03 - Power over effect (under s0)
@@ -251,6 +252,13 @@ plot_radar_plots(methods, criteria, title, scores_n5, scores_n15)
 
 
 
+bon5 = [all_df.groupby('n0')['Power bonf'].mean().iloc[0], 1-all_df.groupby('n0')['FPR bonf'].mean().iloc[0],1-all_df.groupby('n0')['FDR bonf'].mean().iloc[0],all_df.groupby('n0')['Accuracy bonf'].mean().iloc[0],all_df.groupby('n0')['F1 bonf'].mean().iloc[0]]
+holm5 = [all_df.groupby('n0')['Power holm'].mean().iloc[0],1-all_df.groupby('n0')['FPR holm'].mean().iloc[0],1-all_df.groupby('n0')['FDR holm'].mean().iloc[0],all_df.groupby('n0')['Accuracy holm'].mean().iloc[0],all_df.groupby('n0')['F1 holm'].mean().iloc[0]]
+sg5 = [all_df.groupby('n0')['Power sg'].mean().iloc[0], 1-all_df.groupby('n0')['FPR sg'].mean().iloc[0],1-all_df.groupby('n0')['FDR sg'].mean().iloc[0],all_df.groupby('n0')['Accuracy sg'].mean().iloc[0],all_df.groupby('n0')['F1 sg'].mean().iloc[0]]
+bh5 = [all_df.groupby('n0')['Power bh'].mean().iloc[0], 1-all_df.groupby('n0')['FPR bh'].mean().iloc[0],1-all_df.groupby('n0')['FDR bh'].mean().iloc[0],all_df.groupby('n0')['Accuracy bh'].mean().iloc[0],all_df.groupby('n0')['F1 bh'].mean().iloc[0]]
+by5 = [all_df.groupby('n0')['Power by'].mean().iloc[0], 1-all_df.groupby('n0')['FPR by'].mean().iloc[0],1-all_df.groupby('n0')['FDR by'].mean().iloc[0],all_df.groupby('n0')['Accuracy by'].mean().iloc[0],all_df.groupby('n0')['F1 by'].mean().iloc[0]]
+Q5 = [all_df.groupby('n0')['Power Q'].mean().iloc[0], 1-all_df.groupby('n0')['FPR Q'].mean().iloc[0],1-all_df.groupby('n0')['FDR Q'].mean().iloc[0],all_df.groupby('n0')['Accuracy Q'].mean().iloc[0],all_df.groupby('n0')['F1 Q'].mean().iloc[0]]
+[bon5,holm5,sg5,bh5,by5,Q5]
 
 
 # Example usage:
@@ -283,3 +291,83 @@ fpr_f2
 
 fpr_list = [[sum(fpr_f2[i][j])/len(fpr_f2[i][j]) for i in range(3)] for j in range(6)]
 tpr_list = [[sum(power_f2[i][j])/len(power_f2[i][j]) for i in range(3)] for j in range(6)]
+
+
+################## Heatmap
+
+all_df
+
+### HEATMAP 01 - By s0, s1 ###
+
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Data
+
+s0s0 = [all_df.groupby(['S0','S1'])['Power bonf'].mean().iloc[0],all_df.groupby(['S0','S1'])['Power holm'].mean().iloc[0],all_df.groupby(['S0','S1'])['Power sg'].mean().iloc[0],all_df.groupby(['S0','S1'])['Power bh'].mean().iloc[0],all_df.groupby(['S0','S1'])['Power by'].mean().iloc[0],all_df.groupby(['S0','S1'])['Power Q'].mean().iloc[0]]
+s0s1 = [all_df.groupby(['S0','S1'])['Power bonf'].mean().iloc[1], all_df.groupby(['S0','S1'])['Power holm'].mean().iloc[1], all_df.groupby(['S0','S1'])['Power sg'].mean().iloc[1], all_df.groupby(['S0','S1'])['Power bh'].mean().iloc[1], all_df.groupby(['S0','S1'])['Power by'].mean().iloc[1], all_df.groupby(['S0','S1'])['Power Q'].mean().iloc[1]]
+s1s0 = [all_df.groupby(['S0','S1'])['Power bonf'].mean().iloc[2], all_df.groupby(['S0','S1'])['Power holm'].mean().iloc[2], all_df.groupby(['S0','S1'])['Power sg'].mean().iloc[2], all_df.groupby(['S0','S1'])['Power bh'].mean().iloc[2], all_df.groupby(['S0','S1'])['Power by'].mean().iloc[2], all_df.groupby(['S0','S1'])['Power Q'].mean().iloc[2]]
+s1s1 = [all_df.groupby(['S0','S1'])['Power bonf'].mean().iloc[3], all_df.groupby(['S0','S1'])['Power holm'].mean().iloc[3], all_df.groupby(['S0','S1'])['Power sg'].mean().iloc[3], all_df.groupby(['S0','S1'])['Power bh'].mean().iloc[3], all_df.groupby(['S0','S1'])['Power by'].mean().iloc[3], all_df.groupby(['S0','S1'])['Power Q'].mean().iloc[3]]
+
+
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
+parameters = ['S0 = 1.0\nS1 = 1.0', 'S0 = 0.5\nS1 = 1.0', 'S0 = 1.0\nS1 = 0.5','S0 = 0.5\nS1 = 0.5']
+num_parameters = len(parameters)
+num_methods = len(methods)
+data = [s1s1,s0s1,s1s0,s0s0] 
+
+# Create heatmap
+sns.heatmap(data, cmap='Blues', annot=True, fmt=".2f")
+
+# Customize labels and title
+plt.xlabel('Methods', fontname='Times New Roman')
+plt.ylabel('Sample Standard deviations',fontname='Times New Roman')
+#plt.title('Comparison of Power Values across combinations of standard deviations')
+
+# Set x-axis tick labels
+plt.xticks(ticks=np.arange(num_methods) + 0.5, labels=methods)
+
+# Set y-axis tick labels
+plt.yticks(ticks=np.arange(num_parameters) + 0.5, labels=parameters, rotation=0)
+
+plt.tight_layout()
+plt.show()
+
+
+
+### HEATMAP 02 - By n0, n1 ###
+
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Data
+
+n0n0 = [all_df.groupby(['n0','n1'])['Power bonf'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power by'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[0]]
+n0n1 = [all_df.groupby(['n0','n1'])['Power bonf'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power by'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[1]]
+n1n0 = [all_df.groupby(['n0','n1'])['Power bonf'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power by'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[2]]
+n1n1 = [all_df.groupby(['n0','n1'])['Power bonf'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power by'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[3]]
+
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
+parameters = ['n0 = 15\nn1 = 15', 'n0 = 5\nn1 = 15', 'n0 = 15\nn1 = 5','n0 = 5\nn1 = 5']
+num_parameters = len(parameters)
+num_methods = len(methods)
+data = [n1n1,n0n1,n1n0,n0n0] 
+
+# Create heatmap
+sns.heatmap(data, cmap='BuPu', annot=True, fmt=".2f")
+
+# Customize labels and title
+plt.xlabel('Methods', fontname='Times New Roman')
+plt.ylabel('Sample sizes',fontname='Times New Roman')
+#plt.title('Comparison of Power Values across combinations of standard deviations')
+
+# Set x-axis tick labels
+plt.xticks(ticks=np.arange(num_methods) + 0.5, labels=methods)
+
+# Set y-axis tick labels
+plt.yticks(ticks=np.arange(num_parameters) + 0.5, labels=parameters, rotation=0)
+
+plt.tight_layout()
+plt.show()

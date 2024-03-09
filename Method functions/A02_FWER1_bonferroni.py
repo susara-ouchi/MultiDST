@@ -9,7 +9,7 @@ from A01_weighting import weighted_p
 def bonferroni(p_values, alpha=0.05, weights = False):
     '''
     Apply Bonferroni correction to a vector of p-values.
-
+            
     Parameters:
         p_values (list or numpy array): Vector of original p-values.
         alpha: Threshold of significance

@@ -6,7 +6,7 @@
 #  H0: p-values come from the same distribution 
 #  H1: p-values comes from two different distributions
 
-def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0.05,show_plot=False,s0=1,s1=1):
+def simulation_01(seed,num_firing,num_nonfire,effect=2,n0=30,n1=30,threshold=0.05,show_plot=False,s0=0.5,s1=1):
     '''
     This is to create p-values from t-distribution & uniform distribution
     '''
@@ -15,6 +15,8 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     import pandas as pd
     import statsmodels.api as sm
     import matplotlib.pyplot as plt
+    from scipy.stats import mannwhitneyu
+    from statsmodels.stats.multitest import multipletests
 
     ############################### Simulating t-test (independent samples) ########################################3
     np.random.seed(seed)
@@ -32,16 +34,15 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     p_value_nonfire = []
 
     for i in range(num_firing):
-        control_group = np.random.normal(m0,s0,size =n0)
-        treatment_group = np.random.normal(m1,s1,size=n1)
-        p_value = sm.stats.ttest_ind(control_group, treatment_group, usevar='unequal')[1]
+        control_group = np.random.gamma(shape=0.5, scale=s0)
+        treatment_group = np.random.gamma(shape=effect, scale=s1)
+        p_value = mannwhitneyu(control_group, treatment_group, alternative='two-sided')[1]
         p_value_fire.append(p_value)
 
     for i in range(num_nonfire):
-        control_group2 = np.random.normal(m0,s0,size =n0)
-        treatment_group2 = np.random.normal(m0,s1,size=n1)
-        p_value2 = sm.stats.ttest_ind(control_group2, treatment_group2,usevar='unequal')[1]
+        p_value2 = np.random.uniform(low=0, high=1)
         p_value_nonfire.append(p_value2)
+
     p_values = p_value_fire + p_value_nonfire
     #Getting Firing and Non-Firing Indices
     
