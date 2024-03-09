@@ -1,5 +1,5 @@
 #####################################################################################
-################ Simulating from Welch t-test #########################
+################ Simulating from Independent samples t-test #########################
 
 
 #Hypothesis:
@@ -34,7 +34,7 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     for i in range(num_firing):
         control_group = np.random.normal(m0,s0,size =n0)
         treatment_group = np.random.normal(m1,s1,size=n1)
-        p_value = sm.stats.ttest_ind(control_group, treatment_group, usevar='unequal')[1]
+        p_value = sm.stats.ttest_ind(control_group, treatment_group,usevar='unequal')[1]
         p_value_fire.append(p_value)
 
     for i in range(num_nonfire):
@@ -42,6 +42,7 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
         treatment_group2 = np.random.normal(m0,s1,size=n1)
         p_value2 = sm.stats.ttest_ind(control_group2, treatment_group2,usevar='unequal')[1]
         p_value_nonfire.append(p_value2)
+
     p_values = p_value_fire + p_value_nonfire
     #Getting Firing and Non-Firing Indices
     
@@ -65,7 +66,7 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     return p_values, significant_p, fire_index, nonfire_index
 
 #Simulating Dataset for 500 F and 9500 NF 
-sim1 = simulation_01(42,5000,5000,effect=5,n0=5,n1=5,threshold=0.05,show_plot=True,s0=1,s1=1)
+sim1 = simulation_01(42,5000,5000,effect=0.5,n0=5,n1=5,threshold=0.05,show_plot=True,s0=1.0,s1=1.0)
 p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
 
 

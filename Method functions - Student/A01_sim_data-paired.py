@@ -16,22 +16,21 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     import statsmodels.api as sm
     import matplotlib.pyplot as plt
 
-    ############################### Simulating t-test (independent samples) ########################################3
+    ############################### Simulating MW-test (independent samples) ########################################3
+    np.random.seed(seed)
     import numpy as np
-    from scipy.stats import ttest_ind
+    from scipy.stats import ttest_rel
 
     np.random.seed(seed)
 
-    # Control Group Distribution
-    control_group = np.random.normal(loc=0, scale=s0, size=(n0, num_firing))
+    # Generate paired samples for control and treatment groups
+    paired_samples = np.random.normal(loc=0, scale=s0, size=(n0, num_firing))
+    paired_samples_treatment = paired_samples + np.random.normal(loc=effect, scale=np.sqrt(s0**2 + s1**2), size=(n0, num_firing))
 
-    # Treatment Group Distribution
-    treatment_group = np.random.normal(loc=effect, scale=s1, size=(n1, num_firing))
-
-    # Calculate independent t-test statistics and p-values
+    # Calculate paired t-test statistics and p-values
     p_values = []
     for i in range(num_firing):
-        statistic, p_value = ttest_ind(control_group[:, i], treatment_group[:, i])
+        statistic, p_value = ttest_rel(paired_samples[:, i], paired_samples_treatment[:, i])
         p_values.append(p_value)
 
     # Non-firing p-values (for comparison)
@@ -47,7 +46,7 @@ def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0
     plt.hist(p_values, bins=30, alpha=0.7, color='blue', edgecolor='black')
     plt.xlabel('p-value')
     plt.ylabel('Frequency')
-    plt.title('Distribution of p-values (Independent t-test)')
+    plt.title('Distribution of p-values (Paired t-test)')
     plt.show()
 
     return p_values, significant_p, fire_index, nonfire_index

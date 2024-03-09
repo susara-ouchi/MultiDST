@@ -188,7 +188,7 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
         plt.plot(effect_sizes, powers_s0[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
     plt.xlabel(x_labels[0] if x_labels else 'Effect Size', fontname='Times New Roman')
     plt.ylabel(y_labels[0] if y_labels else 'Power', fontname='Times New Roman')
-    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman')
+    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman',fontsize=16)
     plt.ylim(0, 1.0)  # Set y-axis limits
     plt.legend(loc='upper left', prop={'family': 'Times New Roman'})
     plt.grid(True)
@@ -199,8 +199,9 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
         plt.plot(effect_sizes, powers_s1[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
     plt.xlabel(x_labels[1] if x_labels else 'Effect Size', fontname='Times New Roman')
     plt.ylabel(y_labels[1] if y_labels else 'Power', fontname='Times New Roman')
-    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman')
+    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman',fontsize=16)
     plt.ylim(0, 1.0)  # Set y-axis limits
+    #plt.legend(loc='upper right', prop={'family': 'Times New Roman'})
     plt.grid(True)
 
     # Plot for n = 30 
@@ -210,7 +211,7 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
             plt.plot(effect_sizes, powers_s2[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
         plt.xlabel(x_labels[2] if x_labels else 'Effect Size', fontname='Times New Roman')
         plt.ylabel(y_labels[2] if y_labels else 'Power', fontname='Times New Roman')
-        plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman')
+        plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman',fontsize=16)
         plt.ylim(0, 1.0)  # Set y-axis limits
         plt.grid(True)
 

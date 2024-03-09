@@ -1,4 +1,4 @@
-#################### SGoF Simulation ##################################
+#################### B-Y Simulation ##################################
 
 # Simulating from Independent samples t-test #
 
@@ -16,7 +16,7 @@ from joblib import Parallel, delayed
 
 ###################################### Simulation distribution loading ###########################################
 from A01_sim_data import simulation_01
-from A02_FWER5_sgof import sgof_test
+from A03_FDR3_BY import BY_method
 
 ####################################### Sim eval ##############################################
 
@@ -35,19 +35,19 @@ def sim_eval(adj_p, sig_index,fire_index,nonfire_index,p_values, threshold =0.05
 
 ########################## Getting simulation results ##############################
 n0_list = []
-n1_list = []
 effect_list = []
 pi0_list = []
 s0_list = []
-s1_list = []
 power_list,power_sd_list = [],[]
 fdr_list,fdr_sd_list = [],[]
 accuracy_list, accuracy_sd_list = [],[]
 fpr_list, fpr_sd_list =[],[]
 f1_list, f1_sd_list = [],[]
 
-def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0,n1,s1):
+def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0=1):
     import pandas as pd
+    n1 = n0
+    s1 = s0
     sim_power = []
     sim_acc =[]
     sim_fdr =[]
@@ -56,11 +56,11 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0,n1,s1):
 
     for i in range(num_simulations): 
         seed = i
-        sim1 = simulation_01(seed,num_firing,num_nonfire,effect,n0=n0,n1=n1,threshold=0.05,show_plot=False, s0=s0, s1=s1)
+        sim1 = simulation_01(seed,num_firing,num_nonfire,effect,n0,n1,threshold=0.05,show_plot=False, s0=s0, s1=s1)
         p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
         #significant p-values from method
-        adj_p = sgof_test(p_values, alpha=0.05, weights = False)[0]
-        significant_p = sgof_test(p_values, alpha=0.05, weights = False)[1]
+        adj_p = BY_method(p_values, alpha=0.05, weights = False)[0]
+        significant_p = BY_method(p_values, alpha=0.05, weights = False)[1]
         sim_eval_res = sim_eval(adj_p, significant_p, fire_index, nonfire_index,p_values, threshold=0.05)
         sig_fire = sim_eval_res[1]
         sig_nonfire = sim_eval_res[2]
@@ -73,7 +73,7 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0,n1,s1):
         TN = p_nonfire - FP
         FN = p_fire - TP
 
-        # Calculate sensitivity (True Positive Rate / Power)
+        # Calculate sensitivity (True Positive Rate)
         if TP + FN == 0:
             sensitivity = 0  # If there are no actual positive cases, sensitivity is 0
         else:
@@ -146,37 +146,37 @@ def power_sim1(num_simulations,n0,num_firing,num_nonfire,effect,pi0,s0,n1,s1):
     print(tabulate(data, headers=["Metric", "Value", "Std Dev"], tablefmt="grid"))
     print("\n---------------------------------------------\n")
 
-    return power,sd,fdr,fdr_sd,acc,acc_sd,fpr,fpr_sd,f1,f1_sd,n0,n1,effect,pi0,s0,s1
+    return power,sd,fdr,fdr_sd,acc,acc_sd,fpr,fpr_sd,f1,f1_sd,n0,effect,pi0,s0
 
 from joblib import Parallel, delayed
 
+
 def power_sim_sample(num_simulations):
-    sample_size = [5, 15]  # From Kang
+    sample_size = [5, 15, 30]  # From Kang
     print("\n---------------------------------------------\n")
-    def process_parameters(n0,n1, num_firing, num_nonfire, pi0, effect, s0,s1):
-        print(f"n0 ={n0}, n1 = {n1}",
+
+    def process_parameters(n0, num_firing, num_nonfire, pi0, effect, s0):
+        print(f"n0 = n1 = {n0}",
               f"\nfiring: {num_firing}\nnon-firing: {num_nonfire}\npi0 = {pi0}",
-              f"\neffect size: {effect}\ns0 ={s0}\n s1: {s1}\n...")
-        return power_sim1(num_simulations, n0, num_firing, num_nonfire, effect, pi0, s0, n1, s1)
+              f"\neffect size: {effect}\ns0 = s1: {s0}\n...")
+        return power_sim1(num_simulations, n0, num_firing, num_nonfire, effect, pi0, s0)
 
     # Generate combinations of parameters
     parameters = []
     for n0 in sample_size:
-        for n1 in sample_size:
-            for num_firing in [2500]:  # From BonEV
-                num_nonfire = 10000 - num_firing
-                pi0 = num_nonfire / 10000
-                for effect in [0.5, 1.0, 1.5]:  # From SGoF
-                    for s0 in [0.5, 1.0]:
-                        for s1 in [0.5,1.0]:
-                            parameters.append((n0,n1, num_firing, num_nonfire, pi0, effect, s0,s1))
+        for num_firing in [1000, 2500, 5000]:  # From BonEV
+            num_nonfire = 10000 - num_firing
+            pi0 = num_nonfire / 10000
+            for effect in [0.5, 1.0, 1.5]:  # From SGoF
+                for s0 in [0.5, 1]:
+                    parameters.append((n0, num_firing, num_nonfire, pi0, effect, s0))
 
     # Execute simulations in parallel
     results = Parallel(n_jobs=-1)(delayed(process_parameters)(*params) for params in parameters)
     print(results)
 
     # Process results
-    n0_list, n1_list, effect_list, pi0_list, s0_list,s1_list = [], [], [], [], [], []
+    n0_list, effect_list, pi0_list, s0_list = [], [], [], []
     power_list, power_sd_list = [], []
     fdr_list, fdr_sd_list = [], []
     accuracy_list, accuracy_sd_list = [], []
@@ -184,13 +184,11 @@ def power_sim_sample(num_simulations):
     f1_list, f1_sd_list = [], []
 
     for result in results:
-        power, sd, fdr, fdr_sd, acc, acc_sd, fpr, fpr_sd, f1, f1_sd, n0,n1, effect, pi0, s0,s1 = result
+        power, sd, fdr, fdr_sd, acc, acc_sd, fpr, fpr_sd, f1, f1_sd, n0, effect, pi0, s0 = result
         n0_list.append(n0) 
-        n1_list.append(n1)
         effect_list.append(effect)
         pi0_list.append(1-pi0) 
         s0_list.append(s0) 
-        s1_list.append(s1)
         power_list.append(power)
         power_sd_list.append(sd)
         fdr_list.append(fdr)
@@ -203,29 +201,37 @@ def power_sim_sample(num_simulations):
         f1_sd_list.append(f1_sd)
 
     print("Done!\n...")
-    return n0_list,effect_list,pi0_list,s0_list,s1_list,power_list,power_sd_list ,fdr_list,fdr_sd_list,accuracy_list,accuracy_sd_list ,fpr_list,fpr_sd_list,f1_list,f1_sd_list,n1_list
+    return n0_list,effect_list,pi0_list,s0_list,power_list,power_sd_list ,fdr_list,fdr_sd_list,accuracy_list,accuracy_sd_list ,fpr_list,fpr_sd_list,f1_list,f1_sd_list 
 
 t1 = time.time()
 #results = [math.factorial(x) for x in range(10000)]
-results = power_sim_sample(50)
+results = power_sim_sample(100)
 results
 t2 = time.time()
 
-(n0_list, effect_list, pi0_list, s0_list, s1_list, 
- power_list, power_sd_list, fdr_list, fdr_sd_list, 
- accuracy_list, accuracy_sd_list, fpr_list, fpr_sd_list, 
- f1_list, f1_sd_list, n1_list) = results
+n0_list = results[0]
+effect_list = results[1]
+pi0_list = results[2]
+s0_list = results[3]
+power_list = results[4]
+power_sd_list = results[5]
+fdr_list = results[6]
+fdr_sd_list = results[7]
+accuracy_list = results[8]
+accuracy_sd_list = results[9] 
+fpr_list = results[10]
+fpr_sd_list = results[11]
+f1_list = results[12]
+f1_sd_list = results[13]
 
 # Create a DataFrame
 import pandas as pd
 
 data = {
     'n0': n0_list,
-    'n1': n1_list,
     '1-Pi0': pi0_list,  #to get non null proportion
     'Effect': effect_list,
     'S0':s0_list,
-    'S1':s1_list,
     'Power': power_list,
     'Power SD': power_sd_list,
     'FDR': fdr_list,
@@ -240,11 +246,11 @@ data = {
     'F1 SD': f1_sd_list
 }
 
-df_sgof = pd.DataFrame(data)
+df_by = pd.DataFrame(data)
 
 # Print the DataFrame
-print(df_sgof)
+print(df_by)
 print(t2-t1)
 
-df_sgof.to_csv('MultiDST/Simulated datasets/sgof_sim_results.csv', index=False)
+df_by.to_csv('MultiDST/Simulated datasets/by_sim_results.csv', index=False)
 

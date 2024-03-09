@@ -119,7 +119,9 @@ def group_line_plot(df_select, g_var,var1,var2):
     plt.legend()
     plt.show()
 ###########################################################################################################
-def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', ylabel='Values', border_color='grey'):
+
+def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', ylabel='Values'):
+    import matplotlib.pyplot as plt
     """
     Draw a bar chart using user-defined function.
 
@@ -129,21 +131,14 @@ def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', y
         title (str): Title of the chart (default is 'Bar Chart').
         xlabel (str): Label for the x-axis (default is 'Categories').
         ylabel (str): Label for the y-axis (default is 'Values').
-        border_color (str): Color of the borders (default is 'black').
     """
-    colors = ['cornflowerblue', 'greenyellow']
-    bars = plt.bar(categories, values, color=colors)
-    
-    # Add borders to bars
-    for bar in bars:
-        bar.set_edgecolor(border_color)
-    
-    plt.title(title, fontname='Times New Roman')
-    plt.xlabel(xlabel, fontname='Times New Roman')
-    plt.ylabel(ylabel, fontname='Times New Roman')
-    plt.xticks(fontname='Times New Roman')  # Set font for category labels
+    colors = [plt.cm.viridis(120),plt.cm.viridis(50)]
+    plt.bar(categories, values, color=colors)
+    plt.title(title,fontname='Times New Roman')
+    plt.xlabel(xlabel,fontname='Times New Roman')
+    #plt.yticks(range(0, 110,10)) #for percentage
+    plt.ylabel(ylabel,fontname='Times New Roman')
     plt.show()
-
 
 
 ##############################################################################
@@ -174,8 +169,10 @@ plot_roc(methods, tpr_list, fpr_list)
 
 #########################################################################################
 
+import matplotlib.pyplot as plt
 
 import matplotlib.pyplot as plt
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
 
 def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=None, titles=None, x_labels=None, y_labels=None):
     num_plots = 2 if powers_s2 is None else 3
@@ -191,9 +188,9 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
         plt.plot(effect_sizes, powers_s0[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
     plt.xlabel(x_labels[0] if x_labels else 'Effect Size', fontname='Times New Roman')
     plt.ylabel(y_labels[0] if y_labels else 'Power', fontname='Times New Roman')
-    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman')
+    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman',fontsize=15)
     plt.ylim(0, 1.0)  # Set y-axis limits
-    plt.legend(loc='upper left', prop={'family': 'Times New Roman'})
+    #plt.legend(loc='upper left', prop={'family': 'Times New Roman'})
     plt.grid(True)
 
     # Plot for S = 1.0 / n = 15
@@ -202,8 +199,9 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
         plt.plot(effect_sizes, powers_s1[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
     plt.xlabel(x_labels[1] if x_labels else 'Effect Size', fontname='Times New Roman')
     plt.ylabel(y_labels[1] if y_labels else 'Power', fontname='Times New Roman')
-    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman')
+    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman',fontsize=15)
     plt.ylim(0, 1.0)  # Set y-axis limits
+    plt.legend(loc='upper right', prop={'family': 'Times New Roman'})
     plt.grid(True)
 
     # Plot for n = 30 
@@ -213,7 +211,7 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
             plt.plot(effect_sizes, powers_s2[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
         plt.xlabel(x_labels[2] if x_labels else 'Effect Size', fontname='Times New Roman')
         plt.ylabel(y_labels[2] if y_labels else 'Power', fontname='Times New Roman')
-        plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman')
+        plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman',fontsize=15)
         plt.ylim(0, 1.0)  # Set y-axis limits
         plt.grid(True)
 
