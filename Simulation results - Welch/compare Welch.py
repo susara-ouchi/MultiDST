@@ -7,7 +7,6 @@ from visualization import plot_roc
 from visualization import plot_radar_plots
 
 ### 00 - Loading the datasets
-### 00 - Loading the datasets
 uncorrected_df = pd.read_csv(r'MultiDST\Simulated datasets 2\uncorrected_sim_results.csv')
 bonferroni_df = pd.read_csv(r'MultiDST\Simulated datasets 2\bonferroni_sim_results.csv')
 holm_df = pd.read_csv(r'MultiDST\Simulated datasets 2\holm_sim_results.csv')
@@ -371,3 +370,89 @@ plt.yticks(ticks=np.arange(num_parameters) + 0.5, labels=parameters, rotation=0)
 
 plt.tight_layout()
 plt.show()
+
+
+
+# Plotting the power over effect
+all_df
+n0n0 = [all_df.groupby(['n0','n1','Effect'])['Power bonf'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power by'].mean().iloc[0],all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[0]]
+n0n1 = [all_df.groupby(['n0','n1'])['Power bonf'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power by'].mean().iloc[1], all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[1]]
+n1n0 = [all_df.groupby(['n0','n1'])['Power bonf'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power by'].mean().iloc[2], all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[2]]
+n1n1 = [all_df.groupby(['n0','n1'])['Power bonf'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power holm'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power sg'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power bh'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power by'].mean().iloc[3], all_df.groupby(['n0','n1'])['Power Q'].mean().iloc[3]]
+
+all_df['n0'][:12]
+all_df['n1'][:12]
+
+list1 = ['Power bonf','Power holm','Power sg','Power bh','Power by','Power Q']
+[all_df.groupby(['n0','n1','Effect'])[list[0]].mean().iloc[:3].to_list(),
+ all_df.groupby(['n0','n1','Effect'])[list[1]].mean().iloc[:3].to_list()]
+
+data = [[all_df.groupby(['n0', 'n1', 'Effect'])[column].mean().iloc[:3].tolist() for column in list],
+        [all_df.groupby(['n0', 'n1', 'Effect'])[column].mean().iloc[3:6].tolist() for column in list],
+        [all_df.groupby(['n0', 'n1', 'Effect'])[column].mean().iloc[6:9].tolist() for column in list],
+        [all_df.groupby(['n0', 'n1', 'Effect'])[column].mean().iloc[9:12].tolist() for column in list]]
+
+
+
+import matplotlib.pyplot as plt
+
+def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=None, titles=None, x_labels=None, y_labels=None):
+    num_plots = 4 if powers_s2 is not None else 3
+    plt.figure(figsize=(8, 8))
+
+    # Define colors and markers
+    colors = ['black', 'red', 'purple', 'tomato', 'mediumseagreen', 'navy', 'magenta']
+    markers = ['o', 's', '^', 'v', 'D', '*', 'X']
+
+    # Plot for s = 0.5 / n = 5
+    plt.subplot(2, 2, 1)
+    for i in range(len(methods)):
+        plt.plot(effect_sizes, powers_s0[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
+    plt.xlabel(x_labels[0] if x_labels else 'Effect Size', fontname='Times New Roman')
+    plt.ylabel(y_labels[0] if y_labels else 'Power', fontname='Times New Roman')
+    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman', fontsize=15)
+    plt.ylim(0, 1.0)  # Set y-axis limits
+    plt.legend(loc='upper left', prop={'family': 'Times New Roman'}, fontsize=10)
+    plt.grid(True)
+
+    # Plot for S = 1.0 / n = 15
+    plt.subplot(2, 2, 2)
+    for i in range(len(methods)):
+        plt.plot(effect_sizes, powers_s1[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
+    plt.xlabel(x_labels[1] if x_labels else 'Effect Size', fontname='Times New Roman')
+    plt.ylabel(y_labels[1] if y_labels else 'Power', fontname='Times New Roman')
+    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman', fontsize=15)
+    plt.ylim(0, 1.0)  # Set y-axis limits
+    plt.legend(loc='upper left', prop={'family': 'Times New Roman'}, fontsize=10)
+    plt.grid(True)
+
+    # Plot for S = 1.5 / n = 30
+    plt.subplot(2, 2, 3)
+    for i in range(len(methods)):
+        plt.plot(effect_sizes, powers_s2[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
+    plt.xlabel(x_labels[2] if x_labels else 'Effect Size', fontname='Times New Roman')
+    plt.ylabel(y_labels[2] if y_labels else 'Power', fontname='Times New Roman')
+    plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman', fontsize=15)
+    plt.ylim(0, 1.0)  # Set y-axis limits
+    plt.legend(loc='upper left', prop={'family': 'Times New Roman'}, fontsize=10)
+    plt.grid(True)
+
+    # Plot for additional data, if available
+    if num_plots == 4:
+        plt.subplot(2, 2, 4)
+        # Add your plotting logic for the fourth subplot here
+
+    plt.tight_layout()
+    plt.show()
+
+# Example usage:
+methods = ['Method A', 'Method B', 'Method C']
+effect_sizes = [0.1, 0.2, 0.3, 0.4]
+powers_s0 = [[0.2, 0.3, 0.4, 0.5], [0.3, 0.4, 0.5, 0.6], [0.4, 0.5, 0.6, 0.7],[0.4, 0.5, 0.6, 0.7]]
+powers_s1 = [[0.5, 0.6, 0.7, 0.8], [0.6, 0.7, 0.8, 0.9], [0.7, 0.8, 0.9, 0.95],[0.4, 0.5, 0.6, 0.7]]
+powers_s2 = [[0.7, 0.8, 0.9, 0.95], [0.8, 0.85, 0.9, 0.95], [0.9, 0.92, 0.94, 0.96],[0.4, 0.5, 0.6, 0.7]]
+titles = ['Power vs. Effect Size (S0 = 0.5)', 'Power vs. Effect Size (S1 = 1.0)', 'Power vs. Effect Size (S2 = 1.5)']
+x_labels = ['Effect Size (S0 = 0.5)', 'Effect Size (S1 = 1.0)', 'Effect Size (S2 = 1.5)']
+y_labels = ['Power', 'Power', 'Power']
+
+plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2, titles, x_labels, y_labels)

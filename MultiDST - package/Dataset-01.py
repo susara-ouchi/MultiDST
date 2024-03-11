@@ -10,7 +10,8 @@ from MultiDST.BY import BY_method
 
 from utils.visualization import draw_histogram
 from utils.visualization import sig_index_plot
-from utils.visualization import draw_bar_chart
+from utils.visualization import draw_p_bar_chart
+from utils.visualization import plot_heatmap 
 
 import pandas as pd
 
@@ -58,7 +59,7 @@ T_CRE = sum(df['Type']=="CRE")
 T_Random = sum(df['Type']=="Random")
 Total = T_CRE + T_Random
 
-draw_bar_chart(['CRE','Random'], [T_CRE,T_Random], title=' ' , xlabel='Type of element', ylabel='Frequency', border_color='grey')
+draw_p_bar_chart(['CRE','Random'], [100*T_CRE/Total,100*T_Random/Total], title=' ' , xlabel='Type of element', ylabel='Percentage', border_color='grey')
 
 p_values = p_valuesSTARR
 ###################### Try 01 - Applying the methods #################################
@@ -71,32 +72,32 @@ sig_index_plot(p_values, sig_index)
 # 1 - Bonferroni
 bonf_results = bonferroni(p_values,alpha=0.05, weights = False)
 bonf_p, sig_bonf_p = bonf_results[0], bonf_results[1]
-sig_index_plot(p_values, sig_bonf_p)
+sig_index_plot(p_values, sig_bonf_p, pt=1, color = 'blue')
 
 # 2 - Holm
 holm_results = holm(p_values,alpha=0.05, weights = False)
 holm_p, sig_holm_p = holm_results[0], holm_results[1]
-sig_index_plot(p_values, sig_holm_p)
+sig_index_plot(p_values, sig_holm_p, pt=2, color = 'green')
 
 # 3 - SGoF
 sgof_results = sgof_test(p_values,alpha=0.05, weights = False)
 sgof_p, sig_sgof_p = sgof_results[0], sgof_results[1]
-sig_index_plot(p_values, sig_sgof_p)
+sig_index_plot(p_values, sig_sgof_p, pt=2, color = 'green')
 
 # 4 - BH
 bh_results = bh_method(p_values,alpha=0.05, weights = False)
 bh_p, sig_bh_p = bh_results[0], bh_results[1]
-sig_index_plot(p_values, sig_bh_p)
+sig_index_plot(p_values, sig_bh_p,pt=2, color = 'green')
 
 # 5 - BY
 by_results = BY_method(p_values,alpha=0.05, weights = False)
 by_p, sig_by_p = by_results[0], by_results[1]
-sig_index_plot(p_values, sig_by_p)
+sig_index_plot(p_values, sig_by_p, pt=2, color = 'green')
 
 # 6 - Qval
 q_results = q_value(p_values,alpha=0.05, weights = False)
 q, sig_q = q_results[0], q_results[1]
-sig_index_plot(p_values, sig_q)
+sig_index_plot(p_values, sig_q,pt=2, color = 'green')
 
 print("Uncorrected: ",len(sig_index),
       "\nBonferroni:",len(sig_bonf_p),
@@ -105,6 +106,11 @@ print("Uncorrected: ",len(sig_index),
       "\nBH",len(sig_bh_p),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
+
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
+sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
+plot_heatmap(methods, sig_indices, title="First")
+
 
 ############################# Shortlisting p values - Remove Bonferroni ########################
 
@@ -151,6 +157,9 @@ print("Uncorrected: ",len(sig_index),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
 
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
+sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
+plot_heatmap(methods, sig_indices, title="second")
 
 ############################# Iter 3 - Shortlisting p values ########################
 
@@ -158,6 +167,8 @@ p_values3 = [p_values[i] for i,val in enumerate(p_values) if i not in sig_q]
 p_values = p_values3
 
 draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
+
 
 ###################### Try 02 -  Applying the methods #################################
 
@@ -196,6 +207,9 @@ print("Uncorrected: ",len(sig_index),
       "\nBH",len(sig_bh_p),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
+
+sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
+plot_heatmap(methods, sig_indices, title="third")
 
 ############################# Iter 4 - Shortlisting p values ########################
 
@@ -242,6 +256,8 @@ print("Uncorrected: ",len(sig_index),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
 
+sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
+plot_heatmap(methods, sig_indices, title="fourth")
 
 ############################# Iter 5 - Shortlisting p values ########################
 
@@ -288,6 +304,8 @@ print("Uncorrected: ",len(sig_index),
       "\nBY",len(sig_by_p),
       "\nQ-value:",len(sig_q))
 
+sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
+plot_heatmap(methods, sig_indices, title="fifth")
 
 # Now that all the methods have shortlisted the p-values, take a look at the uncorrected ones
 [p_values5[i] for i in sig_index]

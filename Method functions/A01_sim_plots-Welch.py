@@ -82,8 +82,8 @@ import numpy as np
 
 # Define the parameters for the simulations
 seeds = [42, 42, 42, 42, 42, 42]  # Example seeds (replicated 6 times)
-num_firing = [500, 500, 500, 2000, 2000, 2000]
-num_nonfire = [9500, 9500, 9500, 8000, 8000, 8000]
+num_firing = [2500,2500,2500,2500,2500,2500] 
+num_nonfire = [7500, 7500,7500,7500,7500,7500]
 effects = [0.5, 1.0, 1.5, 0.5, 1.0, 1.5]  # Example effect sizes (replicated 6 times)
 n0_values = [30 for i in range(6)]  # Example n0 values (replicated 6 times)
 n1_values = [30 for i in range(6)]  # Example n1 values (replicated 6 times)
@@ -115,14 +115,14 @@ plt.show()
 
 # Define the parameters for the simulations
 seeds = [42, 42, 42] * 2  
-num_firing = [5000, 5000, 5000, 5000, 5000, 5000] 
-num_nonfire = [5000, 5000, 5000, 5000, 5000, 5000]
+num_firing = [5000,5000,5000,2500,2500,2500] 
+num_nonfire = [5000,5000,5000,7500,7500,7500]
 effects = [0.5, 0.5, 0.5] * 2  # Example effect sizes (replicated 6 times)
 n0_values = [30] * 6  # Example n0 values (replicated 6 times)
 n1_values = [30] * 6  # Example n1 values (replicated 6 times)
 
-s0_values = [0.2, 0.5, 0.2, 1.0, 1.0, 0.5]  # Example n0 values (replicated 6 times)
-s1_values = [1.0, 1.0, 0.5, 0.2, 0.5, 0.2]  # Example n1 values (replicated 6 times)
+s0_values = [0.2, 0.5, 1.0, 0.2, 0.5, 1.0]  # Example n0 values (replicated 6 times)
+s1_values = [0.2, 0.5, 1.0, 0.2, 0.5, 1.0]  # Example n1 values (replicated 6 times)
 threshold = 0.05
 
 # Create subplots with adjusted spacing
