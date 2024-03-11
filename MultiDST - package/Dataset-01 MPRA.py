@@ -1,4 +1,18 @@
+from utils.weighting import weighted_p_list
+from MultiDST.bonferroni import bonferroni
+from MultiDST.holm import holm
+from MultiDST.sgof import sgof_test
+from MultiDST.BH import bh_method
+from MultiDST.qval import q_value
+from MultiDST.BY import BY_method
 
+from utils.visualization import draw_histogram
+from utils.visualization import sig_index_plot
+from utils.visualization import draw_p_bar_chart
+from utils.visualization import plot_heatmap 
+
+import pandas as pd
+import numpy as np
 
 from utils.weighting import weighted_p_list
 from MultiDST.bonferroni import bonferroni
@@ -12,6 +26,13 @@ from utils.visualization import draw_histogram
 from utils.visualization import sig_index_plot
 from utils.visualization import draw_p_bar_chart
 from utils.visualization import plot_heatmap 
+from utils.visualization import fire_hist
+
+from simulation_functions import simulation_01
+from simulation_functions import confmat
+from simulation_functions import seq_test
+from simulation_functions import DSTmulti_testing
+from functions import multi_DST
 
 import pandas as pd
 
@@ -31,15 +52,227 @@ colnames = lines[0].split()
 # Create a DataFrame using pandas
 df = pd.DataFrame(table_data[1:], columns=colnames)
 
+### Weighted MPRA
+random_ind = df.loc[df['Type'] == "Random"].index
+
 P_MPRA = df['p.value.MPRA']
 P_STARR = df['p.value.STARR']
 
 ###################################### For the full dataset #################################
 
-## plot 01 - Histograms
 import matplotlib.pyplot as plt
 p_valuesMPRA = P_MPRA.values.astype(float)
 p_valuesSTARR = P_STARR.values.astype(float)
+
+p_values = p_valuesSTARR
+
+# Initialize an empty dictionary with empty lists for each column
+df_sigp_dict = {
+    "Uncorrected": [],
+    "Bonferroni":[],
+    "Holm": [],
+    "SGoF": [],
+    "BH": [],
+    "BY": [],
+    "Q-value":[],
+    "pi0 estimate": []
+}
+df_sigp = pd.DataFrame(df_sigp_dict)
+rejections = []
+###################### Try 01 - Applying the methods #################################
+
+#for i in range(num_iter):
+results = multi_DST(p_values, alpha=0.05, weights=False)
+print(results)   
+
+sig_uncorrected = results["Uncorrected"]
+sig_bonf_p = results["Bonferroni"]
+sig_holm_p = results["Holm"]
+sig_sgof_p = results["SGoF"]
+sig_bh_p = results["BH"]
+sig_by_p = results["BY"]
+sig_q = results["Q-value"]
+pi0_est = results["pi0 estimate"]
+
+# Cut off constraint
+total = len(p_values)
+cutoff = (1-pi0_est[0])*total
+print(cutoff)
+
+p_sig_dict = {
+"Uncorrected": len(sig_uncorrected),
+"Bonferroni": len(sig_bonf_p),
+"Holm": len(sig_holm_p),
+"SGoF": len(sig_sgof_p),
+"BH": len(sig_bh_p),
+"BY": len(sig_by_p),
+"Q-value": len(sig_q),
+"pi0 estimate": pi0_est,
+"cutoff": cutoff,
+"Total":total
+}
+p_sig_new = pd.DataFrame(p_sig_dict, index=[0])
+
+# Concatenate the p_values_df DataFrame with your existing DataFrame
+df_sigp = pd.concat([df_sigp, p_sig_new], ignore_index=True)
+df_sigp
+
+
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value', 'Random']
+sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q, random_ind]
+
+CRE_p = [(i,p_values[i]) for (i,val) in enumerate(range(len(p_values))) if i not in random_ind]
+Rand_p = [(i,p_values[i]) for (i,val) in enumerate(random_ind)]
+
+CRE_ind = list(map(lambda x: x[0], CRE_p))
+rand_ind =  list(map(lambda x: x[0], Rand_p))
+
+
+fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
+
+
+len(p_values)
+####################### Weighting approach #####################################
+
+from collections import Counter
+
+# Combine all indices into a single list
+all_indices = sig_bonf_p + sig_holm_p + sig_sgof_p + sig_bh_p + sig_by_p + sig_q
+
+# Count occurrences of each index across all lists
+index_counts = Counter(all_indices)
+
+# Find indices present in all 6 lists
+indices_in_all = [index for index, count in index_counts.items() if count == 6]
+
+# Find indices present in 5 of the lists
+indices_in_5 = [index for index, count in index_counts.items() if count == 5]
+
+# Find indices present in 4 of the lists
+indices_in_4 = [index for index, count in index_counts.items() if count == 4]
+
+# Repeat similar steps for 3, 2, 1, and 0 of the lists
+
+# Indices present in 3 of the lists
+indices_in_3 = [index for index, count in index_counts.items() if count == 3]
+
+# Indices present in 2 of the lists
+indices_in_2 = [index for index, count in index_counts.items() if count == 2]
+
+# Indices present in 1 of the lists
+indices_in_1 = [index for index, count in index_counts.items() if count == 1]
+
+# Indices present in none of the lists
+indices_in_none = [[p for p in range(len(p_values)) if p not in all_indices]]
+
+# Print or use the results as needed
+print("Indices present in all 6 lists:", indices_in_all)
+print("Indices present in 5 of the lists:", indices_in_5)
+print("Indices present in 4 of the lists:", indices_in_4)
+print("Indices present in 3 of the lists:", indices_in_3)
+print("Indices present in 2 of the lists:", indices_in_2)
+print("Indices present in 1 of the lists:", indices_in_1)
+print("Indices present in none of the lists:", indices_in_none)
+
+len(indices_in_all)
+len(indices_in_5)
+len(indices_in_4)
+len(indices_in_3)
+len(indices_in_2)
+len(indices_in_1)
+len(indices_in_none)
+
+len(indices_in_all)+len(indices_in_5)+len(indices_in_4)+len(indices_in_3)+len(indices_in_2)+len(indices_in_1)+len(indices_in_none)
+
+from utils.weighting import multiweights
+weighted_p_values = multiweights(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q)
+print(weighted_p_values)
+
+# Iterate over the generator and print each weighted p-value
+for p_value in multiweights(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q):
+    print(p_value)
+
+
+
+draw_histogram(p_values, bins=50, color='skyblue', edgecolor='navy', title='Histogram of MPRA p_values', xlabel='Values', ylabel='Frequency')
+plot_heatmap(methods, sig_indices)
+
+min_list = sig_sgof_p
+
+# Create a sublist containing the values corresponding to the first 7 keys
+min_list
+rejections = rejections + min_list
+len(rejections)
+
+
+# p_index2  = [i for i, val in enumerate(og_p_values) if i not in rejections]
+# p_values2 = [val for i, val in enumerate(og_p_values) if i not in rejections]
+# fire_index2 = [i for i,val in enumerate(p_values2) if p_values2[i] in p_value_fire]
+# nonfire_index2 = [i for i,val in enumerate(p_values2) if p_values2[i] in p_value_nonfire]
+# len(nonfire_index2)
+# len(p_values2)
+# significant_p = min_list
+# sig_fire = [p for p in significant_p if p in fire_index2]
+# sig_nonfire = [p for p in significant_p if p in nonfire_index2]
+# len_p_fire = len(fire_index2)
+# len_p_nonfire = len(nonfire_index2)
+# confmat(sig_fire, sig_nonfire, len_p_fire, len_p_nonfire)
+
+# p_values = p_values2
+# fire_index = fire_index2
+# nonfire_index = nonfire_index2
+# len(p_values)
+# df_sigp
+# pi0_est
+# df_sigp
+
+
+df_sigp.to_csv('MultiDST/Simulation Test results/setting4.csv', index=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Create subplots with 1 row and 2 columns
 fig, axs = plt.subplots(1, 2, figsize=(12, 6))
@@ -124,7 +357,7 @@ print("Uncorrected: ",len(sig_index),
 
 methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
 sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
-plot_heatmap(methods, sig_indices)
+plot_heatmap(methods, sig_indices, title="First")
 
 
 ############################# Shortlisting p values - Remove Bonferroni ########################

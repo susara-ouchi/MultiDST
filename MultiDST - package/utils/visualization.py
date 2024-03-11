@@ -16,9 +16,9 @@ def draw_histogram(data, bins=10, color='skyblue', edgecolor='black', title='His
     plt.hist(data, bins=bins, color=color, edgecolor=edgecolor)
 
     # Customize the chart
-    plt.title(title, fontname='Times New Roman')
-    plt.xlabel(xlabel,fontname='Times New Roman')
-    plt.ylabel(ylabel,fontname='Times New Roman')
+    plt.title(title, fontname='Times New Roman', fontsize=15)
+    plt.xlabel(xlabel,fontname='Times New Roman', fontsize=15)
+    plt.ylabel(ylabel,fontname='Times New Roman', fontsize=15)
 
     # Show the chart
     plt.show()
@@ -63,15 +63,15 @@ def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', y
     for bar in bars:
         bar.set_edgecolor(border_color)
     
-    plt.title(title, fontname='Times New Roman')
-    plt.xlabel(xlabel, fontname='Times New Roman')
-    plt.ylabel(ylabel, fontname='Times New Roman')
-    plt.xticks(fontname='Times New Roman')  # Set font for category labels
+    plt.title(title, fontname='Times New Roman', fontsize=15)
+    plt.xlabel(xlabel, fontname='Times New Roman', fontsize=15)
+    plt.ylabel(ylabel, fontname='Times New Roman', fontsize=15)
+    plt.xticks(fontname='Times New Roman', fontsize=15) 
     plt.show()
 
 import matplotlib.pyplot as plt
 
-def draw_p_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', ylabel='Values', border_color='grey'):
+def draw_p_bar_chart(categories, values, title='Bar Chart', xlabel='Type', ylabel='Values', border_color='grey'):
     """
     Draw a bar chart using user-defined function.
 
@@ -90,19 +90,19 @@ def draw_p_bar_chart(categories, values, title='Bar Chart', xlabel='Categories',
     for bar in bars:
         bar.set_edgecolor(border_color)
     
-    plt.title(title, fontname='Times New Roman')
-    plt.xlabel(xlabel, fontname='Times New Roman')
-    plt.ylabel(ylabel, fontname='Times New Roman')
-    plt.xticks(fontname='Times New Roman')  # Set font for category labels
+    plt.title(title, fontname='Times New Roman',fontsize=15)
+    plt.xlabel(xlabel, fontname='Times New Roman',fontsize=13)
+    plt.ylabel(ylabel, fontname='Times New Roman', fontsize=13)
+    plt.xticks(fontname='Times New Roman', fontsize=10)  # Set font for category labels
     
     # Adding percentage labels on bars
     total = sum(values)
     for bar in bars:
         height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width() / 2, height, f'{height / total * 100:.2f}%', ha='center', va='bottom', fontname='Times New Roman')
+        plt.text(bar.get_x() + bar.get_width() / 2, height/2, f'{height / total * 100:.2f}%', ha='center', va='bottom', color= "black", fontname='Bahnschrift Light', fontsize=15)
     
     plt.ylim(0,100)
-    plt.yticks(range(0,101,10))
+    plt.yticks(range(0,101,10), fontsize=10)
 
     plt.show()
 
@@ -110,6 +110,66 @@ def draw_p_bar_chart(categories, values, title='Bar Chart', xlabel='Categories',
 categories = ['A', 'B']
 values = [40, 60]
 draw_p_bar_chart(categories, values, title='Percentage Bar Chart', ylabel='Percentage')
+
+
+
+
+
+import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+
+def draw_p_bar_chart(categories, values, title='Bar Chart', xlabel='Type', ylabel='Values', border_color='grey'):
+    """
+    Draw a bar chart using user-defined function.
+
+    Parameters:
+        categories (list): List of category labels.
+        values (list): List of corresponding values for each category.
+        title (str): Title of the chart (default is 'Bar Chart').
+        xlabel (str): Label for the x-axis (default is 'Categories').
+        ylabel (str): Label for the y-axis (default is 'Values').
+        border_color (str): Color of the borders (default is 'black').
+    """
+    colors = ['#3553ff', '#72ff35']
+    bars = plt.bar(categories, values, color=colors)
+    
+    # Add borders to bars
+    for bar in bars:
+        bar.set_edgecolor(border_color)
+    
+    plt.title(title, fontname='Times New Roman',fontsize=15)
+    plt.xlabel(xlabel, fontname='Times New Roman',fontsize=13)
+    plt.ylabel(ylabel, fontname='Times New Roman', fontsize=13)
+    plt.xticks(fontname='Times New Roman', fontsize=10)  # Set font for category labels
+    
+    # Adding percentage labels on bars with box
+    total = sum(values)
+    for i, bar in enumerate(bars):
+        height = bar.get_height()
+        text = f'{height / total * 100:.2f}%'
+        if i == 0:
+            plt.text(bar.get_x() + bar.get_width() / 2, height/2, text, ha='center', va='center', color="black", fontname='Times New Roman', fontsize=15, bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
+        else:
+            plt.text(bar.get_x() + bar.get_width() / 2, height+4, text, ha='center', va='bottom', color="black", fontname='Times New Roman', fontsize=15, bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
+    
+    plt.ylim(0,100)
+    plt.yticks(range(0,101,10), fontsize=10)
+
+    plt.show()
+
+# Example usage:
+categories = ['A', 'B']
+values = [40, 60]
+draw_p_bar_chart(categories, values, title='Percentage Bar Chart', ylabel='Percentage')
+
+
+
+
+
+
+
+
+
 
 
 ##############################################################################
@@ -269,11 +329,11 @@ plot_heatmap(methods, sig_indices)
 
 # Fire histogram
 
-def fire_hist(p_values, fire_index, nonfire_index, title="plot"):
+def fire_hist(p_values, fire_index, nonfire_index, title="plot",col1 = 'skyblue', col2 = 'skyblue',left='firing',right='non-firing'):
       p_value_fire = [p_values[i] for i in fire_index]
       p_value_nonfire = [p_values[i] for i in nonfire_index]
       hist_data = [p_value_fire, p_value_nonfire]
-      plt.hist(hist_data, bins=30, alpha=1, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'],
+      plt.hist(hist_data, bins=30, alpha=1, label=[left, right], color=[col1, col2],
                edgecolor='black', stacked=True)
       plt.title(title, fontname='Times New Roman')
       plt.xlabel('p-value', fontname='Times New Roman')

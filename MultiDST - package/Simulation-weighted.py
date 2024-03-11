@@ -20,6 +20,7 @@ from simulation_functions import confmat
 from simulation_functions import seq_test
 from simulation_functions import DSTmulti_testing
 
+from utils.weighting import multiweights
 
 np.random.seed(42)
 # 01
