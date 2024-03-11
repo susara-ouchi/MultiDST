@@ -1,7 +1,7 @@
 #importing dependencies
 import numpy as np
 
-def weighted_p_list(p_values, weights):
+def weighted_p_list(p_values, weights=None):
     """
     Generate weighted p-values based on the provided weights.
 

@@ -23,81 +23,6 @@ def draw_histogram(data, bins=10, color='skyblue', edgecolor='black', title='His
     # Show the chart
     plt.show()
 
-################################################################################
-
-def sig_index_plot_1(p_values, sig_index,non_sig_index):
-
-    import matplotlib.pyplot as plt
-    from matplotlib.lines import Line2D
-
-    # Sample data - replace this with your actual data
-    sig_indices = sig_index
-    non_sig_indices = non_sig_index
-    methods = ['Method 1', 'Method 2', 'Method 3', 'Method 4', 'Method 5', 'Method 6']  # List of methods
-
-    # Plotting
-    plt.figure(figsize=(10, 6))
-
-    # Define marker size
-    marker_size = 4
-
-    # Plot group A (significant)
-    for i, method in enumerate(methods):
-        plt.scatter([index for index in sig_indices], 
-                    [i] * len([index for index in sig_indices]), 
-                    color='green', s=marker_size)
-
-    # Plot group B (non-significant)
-    for i, method in enumerate(methods):
-        plt.scatter([index for index in non_sig_indices], 
-                    [i] * len([index for index in non_sig_indices]), 
-                    color='red', s=marker_size)
-
-    plt.yticks(range(len(methods)), methods)  # Set y-axis ticks to method names
-    plt.xlabel('Observation Index')
-    plt.ylabel('Methods')
-    plt.title('Observations by Correction Method and Group')
-
-    # Create custom legend handles with colors
-    legend_handles = [
-        Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=4),
-        Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=4),
-    ]
-
-    # Display the legend with custom handles and labels
-    plt.legend(legend_handles, ['Significant', 'Non-significant'], loc='upper right')
-    plt.grid(False)
-    plt.show()
-
-
-##########################################################################################
-    
-def sig_index_plot(p_values, sig_index):
-    p_index = [i for i,p in enumerate(p_values)]
-
-    import matplotlib.pyplot as plt
-
-    # Create lists for x and y values
-    x_values = list(range(1, len(p_values)+1))
-    y_values = [2 if i in sig_index else 1 for i in p_index]  # Alternate between 1 and 2 for y-values
-
-    # Plotting
-    plt.figure(figsize=(10, 6))
-
-    # Plot the line connecting all points
-    plt.plot(x_values, y_values, color='green', marker='o', linestyle='-')
-
-    plt.xlabel('X Axis')
-    plt.ylabel('Y Axis')
-    plt.title('Line Plot of significance over p value indices')
-    plt.grid(True)
-    plt.show()
-
-p_values = [0.1,0.2,0.05,0.6,0.1,0.1,0.05,0.04,0.006,0.7,0.4]
-sig_index = [0,2,3,5]
-
-sig_index_plot(p_values, sig_index)
-
 #############################################################################################
 
 def group_line_plot(df_select, g_var,var1,var2): 
@@ -119,9 +44,7 @@ def group_line_plot(df_select, g_var,var1,var2):
     plt.legend()
     plt.show()
 ###########################################################################################################
-
-def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', ylabel='Values'):
-    import matplotlib.pyplot as plt
+def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', ylabel='Values', border_color='grey'):
     """
     Draw a bar chart using user-defined function.
 
@@ -131,14 +54,62 @@ def draw_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', y
         title (str): Title of the chart (default is 'Bar Chart').
         xlabel (str): Label for the x-axis (default is 'Categories').
         ylabel (str): Label for the y-axis (default is 'Values').
+        border_color (str): Color of the borders (default is 'black').
     """
-    colors = [plt.cm.viridis(120),plt.cm.viridis(50)]
-    plt.bar(categories, values, color=colors)
-    plt.title(title,fontname='Times New Roman')
-    plt.xlabel(xlabel,fontname='Times New Roman')
-    #plt.yticks(range(0, 110,10)) #for percentage
-    plt.ylabel(ylabel,fontname='Times New Roman')
+    colors = ['cornflowerblue', 'greenyellow']
+    bars = plt.bar(categories, values, color=colors)
+    
+    # Add borders to bars
+    for bar in bars:
+        bar.set_edgecolor(border_color)
+    
+    plt.title(title, fontname='Times New Roman')
+    plt.xlabel(xlabel, fontname='Times New Roman')
+    plt.ylabel(ylabel, fontname='Times New Roman')
+    plt.xticks(fontname='Times New Roman')  # Set font for category labels
     plt.show()
+
+import matplotlib.pyplot as plt
+
+def draw_p_bar_chart(categories, values, title='Bar Chart', xlabel='Categories', ylabel='Values', border_color='grey'):
+    """
+    Draw a bar chart using user-defined function.
+
+    Parameters:
+        categories (list): List of category labels.
+        values (list): List of corresponding values for each category.
+        title (str): Title of the chart (default is 'Bar Chart').
+        xlabel (str): Label for the x-axis (default is 'Categories').
+        ylabel (str): Label for the y-axis (default is 'Values').
+        border_color (str): Color of the borders (default is 'black').
+    """
+    colors = ['steelblue', 'greenyellow']
+    bars = plt.bar(categories, values, color=colors)
+    
+    # Add borders to bars
+    for bar in bars:
+        bar.set_edgecolor(border_color)
+    
+    plt.title(title, fontname='Times New Roman')
+    plt.xlabel(xlabel, fontname='Times New Roman')
+    plt.ylabel(ylabel, fontname='Times New Roman')
+    plt.xticks(fontname='Times New Roman')  # Set font for category labels
+    
+    # Adding percentage labels on bars
+    total = sum(values)
+    for bar in bars:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height, f'{height / total * 100:.2f}%', ha='center', va='bottom', fontname='Times New Roman')
+    
+    plt.ylim(0,100)
+    plt.yticks(range(0,101,10))
+
+    plt.show()
+
+# Example usage:
+categories = ['A', 'B']
+values = [40, 60]
+draw_p_bar_chart(categories, values, title='Percentage Bar Chart', ylabel='Percentage')
 
 
 ##############################################################################
@@ -148,9 +119,9 @@ def plot_roc(methods, tpr_list, fpr_list):
     for i in range(len(methods)):
         plt.plot(fpr_list[i], tpr_list[i], label=methods[i])
     plt.plot([0, 1], [0, 1], linestyle='--', color='gray', label='Random Guess')
-    plt.xlabel('False Positive Rate (FPR)')
-    plt.ylabel('True Positive Rate (TPR)')
-    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.xlabel('False Positive Rate (FPR)', fontname='Times New Roman')
+    plt.ylabel('True Positive Rate (TPR)', fontname='Times New Roman')
+    plt.title('Receiver Operating Characteristic (ROC) Curve', fontname='Times New Roman')
     plt.legend()
     plt.grid(True)
     plt.show()
@@ -169,33 +140,54 @@ plot_roc(methods, tpr_list, fpr_list)
 
 #########################################################################################
 
+
 import matplotlib.pyplot as plt
 
-def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1):
-    plt.figure(figsize=(12, 6))
+def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=None, titles=None, x_labels=None, y_labels=None):
+    num_plots = 2 if powers_s2 is None else 3
+    plt.figure(figsize=(5*num_plots, 5))
 
-    # Plot for S0 = 0.5
-    plt.subplot(1, 2, 1)
+    # Define colors and markers
+    colors = ['black', 'red', 'purple', 'tomato', 'mediumseagreen', 'navy', 'magenta']
+    markers = ['o', 's', '^', 'v', 'D', '*','X']
+
+    # Plot for s = 0.5 / n = 5
+    plt.subplot(1, num_plots, 1)
     for i in range(len(methods)):
-        plt.plot(effect_sizes, powers_s0[i], label=methods[i])
-    plt.xlabel('Effect Size')
-    plt.ylabel('Power')
-    plt.title('Power vs. Effect Size (S0 = 0.5)')
-    plt.legend()
+        plt.plot(effect_sizes, powers_s0[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
+    plt.xlabel(x_labels[0] if x_labels else 'Effect Size', fontname='Times New Roman')
+    plt.ylabel(y_labels[0] if y_labels else 'Power', fontname='Times New Roman')
+    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman')
+    plt.ylim(0, 1.0)  # Set y-axis limits
+    plt.legend(loc='upper left', prop={'family': 'Times New Roman'})
     plt.grid(True)
 
-    # Plot for S1 = 1.0
-    plt.subplot(1, 2, 2)
+    # Plot for S = 1.0 / n = 15
+    plt.subplot(1, num_plots, 2)
     for i in range(len(methods)):
-        plt.plot(effect_sizes, powers_s1[i], label=methods[i])
-    plt.xlabel('Effect Size')
-    plt.ylabel('Power')
-    plt.title('Power vs. Effect Size (S1 = 1.0)')
-    plt.legend()
+        plt.plot(effect_sizes, powers_s1[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
+    plt.xlabel(x_labels[1] if x_labels else 'Effect Size', fontname='Times New Roman')
+    plt.ylabel(y_labels[1] if y_labels else 'Power', fontname='Times New Roman')
+    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman')
+    plt.ylim(0, 1.0)  # Set y-axis limits
     plt.grid(True)
+
+    # Plot for n = 30 
+    if num_plots == 3:
+        plt.subplot(1, num_plots, 3)
+        for i in range(len(methods)):
+            plt.plot(effect_sizes, powers_s2[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
+        plt.xlabel(x_labels[2] if x_labels else 'Effect Size', fontname='Times New Roman')
+        plt.ylabel(y_labels[2] if y_labels else 'Power', fontname='Times New Roman')
+        plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman')
+        plt.ylim(0, 1.0)  # Set y-axis limits
+        plt.grid(True)
 
     plt.tight_layout()
     plt.show()
+
+
+
 
 # Example data for effect sizes and powers for 7 different methods
 methods = ['Method 1', 'Method 2', 'Method 3', 'Method 4', 'Method 5', 'Method 6', 'Method 7']
@@ -204,6 +196,92 @@ powers_s0 = [[0.2, 0.4, 0.6, 0.8, 1.0], [0.3, 0.5, 0.7, 0.85, 0.95], [0.1, 0.3, 
              [0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0]]
 powers_s1 = [[0.2, 0.4, 0.6, 0.8, 1.0], [0.3, 0.5, 0.7, 0.85, 0.95], [0.1, 0.3, 0.5, 0.75, 0.9],
              [0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0]]
-plot_power_effect(methods, effect_sizes, powers_s0, powers_s1)
+
+titles =['Custom Title 1', 'Custom Title 2', 'Custom Title 3']
+x_labels = ['Effect size','Effect size','Effect size']
+y_labels = ['Power','Power','Power']
+plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, titles=titles)
+
+
+# For the n plot
+methods = ['Method 1', 'Method 2', 'Method 3', 'Method 4', 'Method 5', 'Method 6', 'Method 7']
+effect_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
+powers_n0 = [[0.2, 0.4, 0.6, 0.8, 1.0], [0.3, 0.5, 0.7, 0.85, 0.95], [0.1, 0.3, 0.5, 0.75, 0.9],
+             [0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0]]
+powers_n1 = [[0.2, 0.4, 0.6, 0.8, 1.0], [0.3, 0.5, 0.7, 0.85, 0.95], [0.1, 0.3, 0.5, 0.75, 0.9],
+             [0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0]]
+powers_n2 = [[0.2, 0.4, 0.6, 0.8, 1.0], [0.3, 0.5, 0.7, 0.85, 0.95], [0.1, 0.3, 0.5, 0.75, 0.9],
+             [0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0]]
+
+titles =['Custom Title 1', 'Custom Title 2', 'Custom Title 3']
+plot_power_effect(methods, effect_sizes, powers_n0, powers_n1, powers_n2, titles=titles)
 
 ###############################################################################################################
+
+## Heatplot with sig indices
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
+def plot_heatmap(methods, sig_indices, title=None):
+    sig_indices = [i if i else [0] for i in sig_indices]
+    # Create a matrix to represent the selected points for each method
+    max_index = max(max(indices) for indices in sig_indices)
+    matrix = np.zeros((len(methods), max_index))
+
+    # Fill the matrix with 1 where a method selected a point
+    for i, indices in enumerate(sig_indices):
+        for idx in indices:
+            matrix[i, idx - 1] = 1  # Subtract 1 to align with 0-based indexing
+
+    # Plot the heatmap
+    plt.figure(figsize=(9, 3))
+    plt.imshow(matrix, cmap='Blues', aspect='auto', interpolation='nearest')
+
+    # Customize the plot
+    plt.xlabel('Hypothesis index', fontname='Times New Roman',fontsize=14)
+    plt.ylabel('Method / Condition', fontname='Times New Roman',fontsize=14)
+    if title:
+        plt.title(title, fontname='Times New Roman')
+    else:
+        plt.title('Selected Points by Methods', fontname='Times New Roman', fontsize=14)
+    plt.yticks(np.arange(len(methods)), methods)
+
+    # Add a legend box
+    legend_box = Rectangle((0, 0), 1, 1, linewidth=1, edgecolor='none', facecolor='midnightblue', label='Significant')
+    plt.legend(handles=[legend_box], loc='upper right')
+    plt.tight_layout()
+    plt.show()
+
+
+# Example usage
+methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
+# sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
+sig_indices = [[1],[1,2],[1,2],[],[1,2],[1,2]]
+plot_heatmap(methods, sig_indices)
+
+
+########################################################################################################
+
+# Fire histogram
+
+def fire_hist(p_values, fire_index, nonfire_index, title="plot"):
+      p_value_fire = [p_values[i] for i in fire_index]
+      p_value_nonfire = [p_values[i] for i in nonfire_index]
+      hist_data = [p_value_fire, p_value_nonfire]
+      plt.hist(hist_data, bins=30, alpha=1, label=['firing', 'non-firing'], color=['skyblue', 'greenyellow'],
+               edgecolor='black', stacked=True)
+      plt.title(title, fontname='Times New Roman')
+      plt.xlabel('p-value', fontname='Times New Roman')
+      plt.ylabel('Frequency', fontname='Times New Roman')
+      plt.legend()
+      plt.show()
+
+p_values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
+fire_index = [0, 1, 2, 3]
+nonfire_index = [5, 6, 7, 8, 9]
+fire_hist(p_values, fire_index, nonfire_index)
