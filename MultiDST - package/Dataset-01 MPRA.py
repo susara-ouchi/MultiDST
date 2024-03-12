@@ -10,6 +10,7 @@ from utils.visualization import draw_histogram
 from utils.visualization import sig_index_plot
 from utils.visualization import draw_p_bar_chart
 from utils.visualization import plot_heatmap 
+from utils.visualization import fire_hist
 
 import pandas as pd
 import numpy as np
@@ -22,11 +23,7 @@ from MultiDST.BH import bh_method
 from MultiDST.qval import q_value
 from MultiDST.BY import BY_method
 
-from utils.visualization import draw_histogram
-from utils.visualization import sig_index_plot
-from utils.visualization import draw_p_bar_chart
-from utils.visualization import plot_heatmap 
-from utils.visualization import fire_hist
+from utils.common_indices import common_indices
 
 from simulation_functions import simulation_01
 from simulation_functions import confmat
@@ -133,56 +130,67 @@ fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random",col1 
 
 len(p_values)
 ####################### Weighting approach #####################################
+p_values
 
-from collections import Counter
+l0,l1,l2,l3,l4,l5,l6,l7 = common_indices(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q)
 
-# Combine all indices into a single list
-all_indices = sig_bonf_p + sig_holm_p + sig_sgof_p + sig_bh_p + sig_by_p + sig_q
+len(l0)
+len(l1)
+len(l2)
+len(l3)
+len(l4)
+len(l5)
+len(l6)
 
-# Count occurrences of each index across all lists
-index_counts = Counter(all_indices)
+len(l0)+len(l1)+len(l2)+len(l3)+len(l4)+len(l5)+len(l6)
 
-# Find indices present in all 6 lists
-indices_in_all = [index for index, count in index_counts.items() if count == 6]
+p_values[10708]
+p_values[0]
 
-# Find indices present in 5 of the lists
-indices_in_5 = [index for index, count in index_counts.items() if count == 5]
+weighted_p = weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights="multi", max_weight = 3)
 
-# Find indices present in 4 of the lists
-indices_in_4 = [index for index, count in index_counts.items() if count == 4]
+weighted_p[0]
+weighted_p[1][10708]
+weighted_p[1][0]
 
-# Repeat similar steps for 3, 2, 1, and 0 of the lists
+p_values = weighted_p
+fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
 
-# Indices present in 3 of the lists
-indices_in_3 = [index for index, count in index_counts.items() if count == 3]
 
-# Indices present in 2 of the lists
-indices_in_2 = [index for index, count in index_counts.items() if count == 2]
+results = multi_DST(p_values, alpha=0.05, weights=False)
+print(results)   
 
-# Indices present in 1 of the lists
-indices_in_1 = [index for index, count in index_counts.items() if count == 1]
+sig_uncorrected = results["Uncorrected"]
+sig_bonf_p = results["Bonferroni"]
+sig_holm_p = results["Holm"]
+sig_sgof_p = results["SGoF"]
+sig_bh_p = results["BH"]
+sig_by_p = results["BY"]
+sig_q = results["Q-value"]
+pi0_est = results["pi0 estimate"]
 
-# Indices present in none of the lists
-indices_in_none = [[p for p in range(len(p_values)) if p not in all_indices]]
+# Cut off constraint
+total = len(p_values)
+cutoff = (1-pi0_est[0])*total
+print(cutoff)
 
-# Print or use the results as needed
-print("Indices present in all 6 lists:", indices_in_all)
-print("Indices present in 5 of the lists:", indices_in_5)
-print("Indices present in 4 of the lists:", indices_in_4)
-print("Indices present in 3 of the lists:", indices_in_3)
-print("Indices present in 2 of the lists:", indices_in_2)
-print("Indices present in 1 of the lists:", indices_in_1)
-print("Indices present in none of the lists:", indices_in_none)
+p_sig_dict = {
+"Uncorrected": len(sig_uncorrected),
+"Bonferroni": len(sig_bonf_p),
+"Holm": len(sig_holm_p),
+"SGoF": len(sig_sgof_p),
+"BH": len(sig_bh_p),
+"BY": len(sig_by_p),
+"Q-value": len(sig_q),
+"pi0 estimate": pi0_est,
+"cutoff": cutoff,
+"Total":total
+}
+p_sig_new = pd.DataFrame(p_sig_dict, index=[0])
 
-len(indices_in_all)
-len(indices_in_5)
-len(indices_in_4)
-len(indices_in_3)
-len(indices_in_2)
-len(indices_in_1)
-len(indices_in_none)
 
-len(indices_in_all)+len(indices_in_5)+len(indices_in_4)+len(indices_in_3)+len(indices_in_2)+len(indices_in_1)+len(indices_in_none)
+
+
 
 from utils.weighting import multiweights
 weighted_p_values = multiweights(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q)

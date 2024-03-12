@@ -1,2 +1,1 @@
-Firing,Uncorrected,Bonferroni,Holm,SGoF,BH,BY,Q-value,TP,TN,FP,FN,Power,pi0,pi0 estimate,cutoff,Total
-,2337.0,1063.0,1066.0,581.0,1778.0,1394.0,1944.0,,,,,,,0.5577972940897223,4742.181818181818,10724.0
+Uncorrected,Bonferroni,Holm,SGoF,BH,BY,Q-value,pi0 estimate
