@@ -11,7 +11,6 @@ from MultiDST.qval import q_value
 from MultiDST.BY import BY_method
 
 from utils.visualization import draw_histogram
-from utils.visualization import sig_index_plot
 from utils.visualization import draw_p_bar_chart
 from utils.visualization import plot_heatmap 
 from utils.visualization import fire_hist
@@ -35,7 +34,7 @@ p_value_fire = [p_values[i] for i in fire_index]
 p_value_nonfire = [p_values[i] for i in nonfire_index]
 
 # Observing histogram
-fire_hist(p_values, fire_index, nonfire_index,title="Histogram of p-values",col1 = 'skyblue', col2 = 'greenyellow',left='firing',right='non-firing')
+# fire_hist(p_values, fire_index, nonfire_index,title="Histogram of p-values",col1 = 'skyblue', col2 = 'greenyellow',left='firing',right='non-firing')
 
 sig_fire = [p for p in significant_p if p in fire_index]
 sig_nonfire = [p for p in significant_p if p in nonfire_index]
@@ -75,18 +74,22 @@ df_sigp = pd.DataFrame(df_sigp_dict)
 k = 1
 num_iter = 1
 
-minw = [0.05,0.10,0.50,0.90]
-maxw = [0.9,1.0,1.2,1.5]
+k1_list = ["--",0.5,1.5,5]
+k2_list = ["--",0.0001,0.5,1.2,5]
 
-for i in range(minw):
-      for j in range(maxw):
+for minw in k1_list:
+      for maxw in k2_list:
         # Picture it before everything :)
-
-        fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Unweighted)",col1 = 'skyblue', col2 = 'greenyellow')
-
-        l0,l1,l2,l3,l4,l5,l6,l7 = common_indices(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q)
-        weighted_p = weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights="multi", max_weight = maxw, min_weight=minw)
-        p_values = weighted_p[1]
+        # fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Unweighted)",col1 = 'skyblue', col2 = 'greenyellow')
+        if minw=="--" and maxw=="--":
+            p_values = og_p_values
+        elif minw=="--" or maxw=="--":
+            continue
+        else:
+          p_values = og_p_values
+          l0,l1,l2,l3,l4,l5,l6,l7 = common_indices(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q)
+          weighted_p = weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights="multi", max_weight = maxw, min_weight=minw)
+          p_values = weighted_p[1]
         og_p_values
 
         fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Weighted) under $k_1$={minw} & $k_2$={maxw}",col1 = 'skyblue', col2 = 'greenyellow')
@@ -106,22 +109,23 @@ for i in range(minw):
         ### Applying the methods
         methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value', 'True  Signals']
         sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q,fire_index]
-        plot_heatmap(methods, sig_indices, title=fr"Significant index plot under $k_1$={minw} & $k_2$={maxw}")
+        # plot_heatmap(methods, sig_indices, title=fr"Significant index plot under $k_1$={minw} & $k_2$={maxw}")
 
         # Create a dictionary to map each list to its name
         indexed_sig_indices = dict(zip(methods, sig_indices))
         min_name = min(indexed_sig_indices, key=lambda x: len(indexed_sig_indices[x]))
         print(f"Min elements are found in {min_name}")
         low_ind = [i for i in range(len(sig_indices)) if len(sig_indices[i]) > 0]
-        valid_indices1 = [i for i in range(len(sig_indices)) if len(sig_indices[i]) > 50] 
+        valid_indices1 = [i for i in range(len(sig_indices)) if len(sig_indices[i]) > 0] 
         valid_indices = [min(valid_indices1) if len(valid_indices1)>0 else min(low_ind)]
         min_index = valid_indices[0]
-        min_list = sig_indices[min_index]
-        # min_list = sig_bh_p
+        # min_list = sig_indices[min_index]
+        min_list = sig_bonf_p
 
         # Create a sublist containing the values corresponding to the first 7 keys
-        min_list
-        rejections = rejections + min_list
+        len(min_list)
+        rejections = min_list
+        # rejections = rejections + min_list
         len(rejections)
 
         p_index2  = [i for i, val in enumerate(og_p_values) if i not in rejections]
@@ -131,10 +135,21 @@ for i in range(minw):
 
         len(nonfire_index2)
         len(p_values2)
-        significant_p = min_list
+        significant_p == min_list
+
+        significant_p=sig_bonf_p
 
         sig_fire = [p for p in significant_p if p in fire_index]
         sig_nonfire = [p for p in significant_p if p in nonfire_index]
+
+        sig_fireBH = [p for p in sig_bh_p if p in fire_index]
+        sig_nonfireBH = [p for p in sig_bh_p if p in nonfire_index]
+
+        TPbh = len(sig_fireBH)
+        FPbh = len(sig_nonfireBH)
+        TNbh = len_p_nonfire - FPbh
+        FNbh = len_p_fire - TPbh
+
         len_p_fire = len(fire_index)
         len_p_nonfire = len(nonfire_index)
         res = confmat(sig_fire, sig_nonfire, len_p_fire, len_p_nonfire)
@@ -157,22 +172,31 @@ for i in range(minw):
         "BH": len(sig_bh_p),
         "BY": len(sig_by_p),
         "Q-value": len(sig_q),
-        "TP":TP,
-        "TN":TN,
-        "FP":FP,
-        "FN":FN,
+        "Bonf TP":TP,
+        "Bonf TN":TN,
+        "Bonf FP":FP,
+        "Bonf FN":FN,
         "Power":power,
         "pi0": pi0,
         "pi0 estimate": pi0_est,
         "cutoff": cutoff,
-        "Total":total
+        "Total":total,
+        "Bonf Errors":FP+FN,
+        "BH Error": FPbh+FNbh,
+        "BH FP": FPbh,
+        "BH FN": FNbh,
+        "Bonf Power": power,
+        "BH Power": TPbh/(TPbh+FNbh)
         }
         p_sig_new = pd.DataFrame(p_sig_dict, index=[0])
 
         # Concatenate the p_values_df DataFrame with your existing DataFrame
         df_sigp = pd.concat([df_sigp, p_sig_new], ignore_index=True)
         df_sigp
-        df_sigp[['K1','K2','Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q-value','Total','FP','FN']]
+        df_sigp2 = df_sigp[['K1','K2','Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q-value','Bonf FP','Bonf FN','BH FP','BH FN','Bonf Errors','BH Error']]
+        df_sigp2
+        df_sigp3 = df_sigp[['K1','K2','Bonferroni', 'BH','Q-value','Bonf FP','Bonf FN','BH FP','BH FN','Bonf Errors','BH Error','Bonf Power', "BH Power"]]
+        df_sigp3
 
 
 p_values = p_values2
@@ -180,7 +204,7 @@ fire_index = fire_index2
 nonfire_index = nonfire_index2
 
 
-df_sigp['Total']
-#df_sigp.to_csv('MultiDST/Simulation Test results/setting4.csv', index=False)
+#df_sigp2['Total']
+df_sigp2.to_csv('MultiDST/Simulation Test results/weighted-mideffect3.csv', index=False)
 
 
