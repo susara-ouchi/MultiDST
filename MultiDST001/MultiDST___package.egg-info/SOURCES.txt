@@ -1,0 +1,16 @@
+setup.py
+MultiDST/BH.py
+MultiDST/BY.py
+MultiDST/__init__.py
+MultiDST/bonferroni.py
+MultiDST/holm.py
+MultiDST/qval.py
+MultiDST/sgof.py
+MultiDST___package.egg-info/PKG-INFO
+MultiDST___package.egg-info/SOURCES.txt
+MultiDST___package.egg-info/dependency_links.txt
+MultiDST___package.egg-info/top_level.txt
+utils/__init__.py
+utils/common_indices.py
+utils/visualization.py
+utils/weighting.py

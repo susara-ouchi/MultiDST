@@ -77,7 +77,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-def plot_heatmap(methods, sig_indices):
+def plot_heatmap(methods, sig_indices, title = "Significance Index Plot"):
     # Create a matrix to represent the selected points for each method
     max_index = max(max(indices) for indices in sig_indices)
     matrix = np.zeros((len(methods), max_index))
@@ -94,7 +94,7 @@ def plot_heatmap(methods, sig_indices):
     # Customize the plot
     plt.xlabel('Points', fontname='Times New Roman')
     plt.ylabel('Methods', fontname='Times New Roman')
-    plt.title('Selected Points by Methods', fontname='Times New Roman')
+    plt.title(title, fontname='Times New Roman')
     plt.yticks(np.arange(len(methods)), methods)
 
     # Add a legend box

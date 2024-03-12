@@ -44,13 +44,13 @@ p_valuesSTARR = P_STARR.values.astype(float)
 # Create subplots with 1 row and 2 columns
 fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 axs[0].hist(p_valuesMPRA, bins=50, color='skyblue', edgecolor='navy')
-axs[0].set_title('Histogram of MPRA p-values')
-axs[0].set_xlabel('Values')
-axs[0].set_ylabel('Frequency')
+axs[0].set_title('Histogram of MPRA p-values', fontsize=15)
+axs[0].set_xlabel('Values', fontsize=15)
+axs[0].set_ylabel('Frequency', fontsize=15)
 axs[1].hist(p_valuesSTARR, bins=50, color='skyblue', edgecolor='navy', alpha=0.7)
-axs[1].set_title('Histogram of STARR p-values')
-axs[1].set_xlabel('Values')
-axs[1].set_ylabel('Frequency')
+axs[1].set_title('Histogram of STARR p-values', fontsize=15)
+axs[1].set_xlabel('Values', fontsize=15)
+axs[1].set_ylabel('Frequency', fontsize=15)
 plt.tight_layout()
 plt.show()
 
@@ -59,7 +59,22 @@ T_CRE = sum(df['Type']=="CRE")
 T_Random = sum(df['Type']=="Random")
 Total = T_CRE + T_Random
 
-draw_p_bar_chart(['CRE','Random'], [100*T_CRE/Total,100*T_Random/Total], title=' ' , xlabel='Type of element', ylabel='Percentage', border_color='grey')
+draw_p_bar_chart(['CRE','Random'], [100*T_CRE/Total,100*T_Random/Total], title='Bar chart of Type' , xlabel='Type of element', ylabel='Percentage', border_color='grey')
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sizes = [40, 60]  # Percentages for the two classes
+labels = ['CRE', 'Random']
+colors = ['#2B547E', '#90EE90']
+plt.figure(figsize=(8, 8))
+plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
+plt.title('Type of Element', fontsize=16)
+plt.axis('equal')
+plt.show()
+
+
 
 p_values = p_valuesSTARR
 ###################### Try 01 - Applying the methods #################################
@@ -109,7 +124,7 @@ print("Uncorrected: ",len(sig_index),
 
 methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
 sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
-plot_heatmap(methods, sig_indices, title="First")
+plot_heatmap(methods, sig_indices)
 
 
 ############################# Shortlisting p values - Remove Bonferroni ########################
@@ -311,3 +326,33 @@ plot_heatmap(methods, sig_indices, title="fifth")
 [p_values5[i] for i in sig_index]
 
 #As we can see, most of the values are close to the cut off of 0.05, hence the methods have done their bit
+
+
+
+
+
+
+
+
+import matplotlib.pyplot as plt
+
+# Data
+data_labels = ['Available', 'Missing']
+data_values = [90, 10]
+
+# Plot
+fig, ax = plt.subplots()
+bars = ax.barh(data_labels, data_values, color=['lightblue', 'lightgreen'])
+
+# Add data labels
+for bar in bars:
+    width = bar.get_width()
+    ax.text(width, bar.get_y() + bar.get_height()/2, f'{width}%', ha='left', va='center')
+
+# Customize plot
+ax.set_xlim(0, 100)
+ax.set_xlabel('Percentage')
+ax.set_title('Availability of Dataset')
+
+# Show plot
+plt.show()
