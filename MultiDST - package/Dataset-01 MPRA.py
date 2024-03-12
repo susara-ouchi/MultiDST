@@ -147,14 +147,14 @@ len(l0)+len(l1)+len(l2)+len(l3)+len(l4)+len(l5)+len(l6)
 p_values[10708]
 p_values[0]
 
-weighted_p = weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights="multi", max_weight = 3)
+weighted_p = weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights="multi", max_weight = 1.05)
 
 weighted_p[0]
 weighted_p[1][10708]
 weighted_p[1][0]
-
-p_values = weighted_p
-fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
+len(weighted_p)
+p_values2 = weighted_p[1]
+fire_hist(p_values2, CRE_ind, rand_ind, title="Histogram of CRE and Random",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
 
 
 results = multi_DST(p_values, alpha=0.05, weights=False)

@@ -317,13 +317,14 @@ def plot_heatmap(methods, sig_indices, title=None):
     plt.tight_layout()
     plt.show()
 
+    # return plt.gca().figure
+
 
 # Example usage
 methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
 # sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q]
 sig_indices = [[1],[1,2],[1,2],[],[1,2],[1,2]]
 plot_heatmap(methods, sig_indices)
-
 
 ########################################################################################################
 
@@ -340,6 +341,8 @@ def fire_hist(p_values, fire_index, nonfire_index, title="plot",col1 = 'skyblue'
       plt.ylabel('Frequency', fontname='Times New Roman')
       plt.legend()
       plt.show()
+
+    #   return plt.gca().figure
 
 p_values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
 fire_index = [0, 1, 2, 3]

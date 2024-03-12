@@ -1,7 +1,7 @@
 #importing dependencies
 import numpy as np
 
-def weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights=None, max_weight=10):
+def weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights=None, max_weight=1.5, min_weight = 0.5):
     """
     Generate weighted p-values based on the provided weights.
 
@@ -19,7 +19,7 @@ def weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights=None, max_weight=10):
     # Generate hypothesis weights
     if weights == "multi":
         # Optimize weights
-        opti_weights = optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, max_weight=max_weight)
+        opti_weights = optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, k2=max_weight, k1 = min_weight)
         weights = opti_weights[0]
 
         lists = [l0, l1, l2, l3, l4, l5, l6]  # List of all lists
@@ -79,7 +79,9 @@ weighting[1]
 from scipy.optimize import minimize
 import numpy as np
 
-def optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, max_weight=10):
+def optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, k2=1.5, k1=0.5):
+    m = len(p_values)
+
     # Assert that the length of p_values is equal to the sum of lengths of l0 to l6
     assert len(p_values) == len(l0) + len(l1) + len(l2) + len(l3) + len(l4) + len(l5) + len(l6), "Length of p_values should be equal to the sum of lengths of l0 to l6"
 
@@ -88,6 +90,15 @@ def optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, max_weight=10):
         return sum(w[i] * p_values[i] for i in range(len(w)))
     
     print("no issue till obj")
+
+        # Define a function to calculate the product of the weighted p-values
+    def weighted_product(w):
+        return np.prod([w[i] * p_values[i] for i in range(len(w))])
+
+    # Additional constraint to ensure the product is close to m
+    def product_constraint(w):
+        return weighted_product(w) - m
+
 
     # Define the constraints
     def constraint(w):
@@ -118,7 +129,8 @@ def optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, max_weight=10):
     # Define the optimization problem
     optimization_result = minimize(objective_function, initial_guess, constraints=[{'type': 'ineq', 'fun': constraint},
                                                                                       {'type': 'eq', 'fun': w3_constraint},
-                                                                                      {'type': 'eq', 'fun': equality_constraint}],
+                                                                                      {'type': 'eq', 'fun': equality_constraint},
+                                                                                      {'type': 'eq', 'fun': product_constraint}],
                                     bounds=bounds, method='SLSQP')
     print("no issue at weights")
     # Extract the optimal values
@@ -126,23 +138,23 @@ def optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, max_weight=10):
     optimal_weights = optimal_weights1
 
     # Calculate the weighted list
-    dweighted_list = [optimal_weights[i] * p_values[index] for i, sublist in enumerate([l0, l1, l2, l3, l4, l5, l6]) for index in sublist]
+    weighted_list = [optimal_weights[i] * p_values[index] for i, sublist in enumerate([l0, l1, l2, l3, l4, l5, l6]) for index in sublist]
     print("All G")
 
     # Apply transformation to the optimal weights
     transformed_weights = optimal_weights.copy()
 
     # # Apply transformation to negative values
-    # neg_indices = transformed_weights < 0
-    # transformed_weights[neg_indices] = 1 / (1 + np.exp(-transformed_weights[neg_indices]))
+    neg_indices = transformed_weights <= 1
+    transformed_weights[neg_indices] = k1 / (1 + np.exp(-transformed_weights[neg_indices]))
 
     # Scale down positive values proportionally
     pos_indices = transformed_weights > 1
-    pos_values = transformed_weights[pos_indices]
-    max_allowed_value = max_weight
-    scaled_positive_values = pos_values * (max_allowed_value / np.max(pos_values))
-    scaled_positive_values = np.clip(scaled_positive_values, 1, max_allowed_value)
-    transformed_weights[pos_indices] = scaled_positive_values
+    # pos_values = transformed_weights[pos_indices]
+    # max_allowed_value = max_weight
+    # scaled_positive_values = pos_values * (max_allowed_value / np.max(pos_values))
+    # scaled_positive_values = np.clip(scaled_positive_values, 1, max_allowed_value)
+    transformed_weights[pos_indices] = k2 / (1 + np.exp(-transformed_weights[pos_indices]))
 
     # # Set zero weights to 1
     # zero_indices = transformed_weights == 0
@@ -296,4 +308,4 @@ len(l4)
 len(l5)
 len(l6)
 
-optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6,max_weight=10)
+optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6,k1=1,k2=2)[0]
