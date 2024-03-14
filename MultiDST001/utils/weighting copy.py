@@ -52,7 +52,7 @@ def weighted_p_list(p_values,weights=[],l0=[], l1=[], l2=[], l3=[], l4=[], l5=[]
 
         # Multiply each p-value with its corresponding weight
         for i, p_value in enumerate(p_values):
-            weighted_p_value = p_value / weights[i]
+            weighted_p_value = p_value * weights[i]
             # Ensure that the weighted p-value does not exceed 1.0
             if weighted_p_value > 1.0:
                 weighted_p_value = 1.0

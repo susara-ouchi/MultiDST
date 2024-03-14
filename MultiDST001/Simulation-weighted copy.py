@@ -74,8 +74,8 @@ df_sigp = pd.DataFrame(df_sigp_dict)
 k = 1
 num_iter = 1
 
-k1_list = [0.0005,0.5,1.2]
-k2_list = [0.5,1.5,3]
+k1_list = ["--",0.0005,0.5,1.2]
+k2_list = ["--",0.5,1.5,3]
 
 for minw in k1_list:
       for maxw in k2_list:
@@ -88,11 +88,11 @@ for minw in k1_list:
         else:
           p_values = og_p_values
           l0,l1,l2,l3,l4,l5,l6,l7 = common_indices(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q)
-          weighted_p = weighted_p_list(p_values,weights="multi",l0=l0,l1=l1,l2=l2,l3=l3,l4=l4,l5=l5,l6=l6, max_weight = maxw, min_weight=minw)
+          weighted_p = weighted_p_list(p_values,l0,l1,l2,l3,l4,l5,l6, weights="multi", max_weight = maxw, min_weight=minw)
           p_values = weighted_p[1]
         og_p_values
 
-        # fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Weighted) under $k_1$={minw} & $k_2$={maxw}",col1 = 'skyblue', col2 = 'greenyellow')
+        fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Weighted) under $k_1$={minw} & $k_2$={maxw}",col1 = 'skyblue', col2 = 'greenyellow')
 
         results = DSTmulti_testing(p_values, alpha=0.05, weights=False)
         print(results)   
@@ -109,7 +109,7 @@ for minw in k1_list:
         ### Applying the methods
         methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value', 'True  Signals']
         sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q,fire_index]
-        plot_heatmap(methods, sig_indices, title=fr"Significant index plot under $k_1$={minw} & $k_2$={maxw}")
+        plot_heatmap(methods, sig_indices, title=fr"Significant index plot  under $k_1$={minw} & $k_2$={maxw}")
 
         # Create a dictionary to map each list to its name
         indexed_sig_indices = dict(zip(methods, sig_indices))
@@ -119,8 +119,8 @@ for minw in k1_list:
         valid_indices1 = [i for i in range(len(sig_indices)) if len(sig_indices[i]) > 0] 
         valid_indices = [min(valid_indices1) if len(valid_indices1)>0 else min(low_ind)]
         min_index = valid_indices[0]
-        min_list = sig_indices[min_index]
-        # min_list = sig_bonf_p
+        # min_list = sig_indices[min_index]
+        min_list = sig_bonf_p
 
         # Create a sublist containing the values corresponding to the first 7 keys
         len(min_list)
@@ -204,4 +204,4 @@ fire_index = fire_index2
 nonfire_index = nonfire_index2
 
 #df_sigp2['Total']
-# df_sigp2.to_csv('MultiDST/Simulation Test results/setting4.csv', index=False)
+df_sigp2.to_csv('MultiDST/MultiDST/MultiDST001/Sim_results1/sim12.csv', index=False)
