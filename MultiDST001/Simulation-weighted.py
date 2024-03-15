@@ -74,13 +74,13 @@ df_sigp = pd.DataFrame(df_sigp_dict)
 k = 1
 num_iter = 1
 
-k1_list = [0.0005,0.5,1.2]
+k1_list = [1.5]
 k2_list = [0.5,1.5,3]
 
 for minw in k1_list:
       for maxw in k2_list:
         # Picture it before everything :)
-        # fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Unweighted)",col1 = 'skyblue', col2 = 'greenyellow')
+        fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Unweighted)",col1 = 'skyblue', col2 = 'greenyellow')
         if minw=="--" and maxw=="--":
             p_values = og_p_values
         elif minw=="--" or maxw=="--":
@@ -92,7 +92,7 @@ for minw in k1_list:
           p_values = weighted_p[1]
         og_p_values
 
-        # fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Weighted) under $k_1$={minw} & $k_2$={maxw}",col1 = 'skyblue', col2 = 'greenyellow')
+        fire_hist(p_values, fire_index, nonfire_index,title=fr"Histogram of p-values (Weighted) under $k_1$={minw} & $k_2$={maxw}",col1 = 'skyblue', col2 = 'greenyellow')
 
         results = DSTmulti_testing(p_values, alpha=0.05, weights=False)
         print(results)   
@@ -109,7 +109,7 @@ for minw in k1_list:
         ### Applying the methods
         methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value', 'True  Signals']
         sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q,fire_index]
-        plot_heatmap(methods, sig_indices, title=fr"Significant index plot under $k_1$={minw} & $k_2$={maxw}")
+        #  plot_heatmap(methods, sig_indices, title=fr"Significant index plot under $k_1$={minw} & $k_2$={maxw}")
 
         # Create a dictionary to map each list to its name
         indexed_sig_indices = dict(zip(methods, sig_indices))

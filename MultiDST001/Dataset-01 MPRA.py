@@ -70,7 +70,7 @@ p_valuesMPRA = P_MPRA.values.astype(float)
 p_valuesSTARR = P_STARR.values.astype(float)
 
 p_values = p_valuesMPRA
-#p_values = p_valuesSTARR
+p_values = p_valuesSTARR
 
 # Initialize an empty dictionary with empty lists for each column
 df_sigp_dict = {
@@ -136,7 +136,9 @@ sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q, ra
 # CRE_ind = list(map(lambda x: x[0], CRE_p))
 # rand_ind =  list(map(lambda x: x[0], Rand_p))
 
-fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random - MPRA ",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
+fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random - STARR ",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
+
+
 plot_heatmap(methods, sig_indices, title=f"Significant index plot for STARR p-values")
 
 sig_uncCRE = [p for p in sig_uncorrected if p in CRE_ind]
@@ -356,8 +358,8 @@ og_p_values = p_values
 rejections = []
 
 
-k1_list = [0.001]
-k2_list = [1.05, 3]
+k1_list = [0.005]
+k2_list = [1.05, 1.2]
 
 for minw in k1_list:
       for maxw in k2_list:

@@ -25,7 +25,7 @@ from utils.weighting import multiweights
 np.random.seed(42)
 # 01
 #Simulating Dataset for 500 F and 9500 NF 
-sim1 = simulation_01(42,2000,8000,effect=1.5,n0=15,n1=15,threshold=0.05,show_plot=False,s0=1.0,s1=1.0)
+sim1 = simulation_01(42,2000,8000,effect=1.0,n0=15,n1=15,threshold=0.05,show_plot=False,s0=1.0,s1=1.0)
 p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
 og_p_values = p_values
 fire_index_og, nonfire_index_og = fire_index, nonfire_index
@@ -71,10 +71,10 @@ df_sigp = pd.DataFrame(df_sigp_dict)
 
 ###################### Try 01 - Applying the methods #################################
 k = 1
-num_iter = 10
+num_iter = 1
 
 # Picture it before everything :)
-# fire_hist(p_values, fire_index, nonfire_index,title="Histogram of p-values",col1 = 'skyblue', col2 = 'greenyellow')
+fire_hist(p_values, fire_index, nonfire_index,title="Histogram of p-values",col1 = 'skyblue', col2 = 'greenyellow')
 
 
 for i in range(num_iter):
@@ -104,7 +104,7 @@ for i in range(num_iter):
       valid_indices = [min(valid_indices1) if len(valid_indices1)>0 else min(low_ind)]
       min_index = valid_indices[0]
       min_list = sig_indices[min_index]
-    #   min_list = sig_bh_p
+      min_list = sig_bh_p
 
       # Create a sublist containing the values corresponding to the first 7 keys
       min_list
@@ -156,7 +156,7 @@ for i in range(num_iter):
 
       # Concatenate the p_values_df DataFrame with your existing DataFrame
       df_sigp = pd.concat([df_sigp, p_sig_new], ignore_index=True)
-      df_sigp
+      df_sigp['BY']
       df_sigp[['Bonferroni','Q-value','SGoF','Power','Total']]
 
       p_values = p_values2
