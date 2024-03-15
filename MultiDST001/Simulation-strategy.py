@@ -25,7 +25,7 @@ from utils.weighting import multiweights
 np.random.seed(42)
 # 01
 #Simulating Dataset for 500 F and 9500 NF 
-sim1 = simulation_01(42,5000,5000,effect=1.5,n0=15,n1=15,threshold=0.05,show_plot=False,s0=1.0,s1=1.0)
+sim1 = simulation_01(42,2000,8000,effect=1.0,n0=15,n1=15,threshold=0.05,show_plot=False,s0=1.0,s1=1.0)
 p_values, significant_p,fire_index,nonfire_index = sim1[0],sim1[1],sim1[2],sim1[3]
 og_p_values = p_values
 fire_index_og, nonfire_index_og = fire_index, nonfire_index
@@ -33,7 +33,7 @@ p_value_fire = [p_values[i] for i in fire_index]
 p_value_nonfire = [p_values[i] for i in nonfire_index]
 
 # Observing histogram
-fire_hist(p_values, fire_index, nonfire_index,title="Histogram of p-values",col1 = 'skyblue', col2 = 'greenyellow',left='firing',right='non-firing')
+# fire_hist(p_values, fire_index, nonfire_index,title="Histogram of p-values",col1 = 'skyblue', col2 = 'greenyellow',left='firing',right='non-firing')
 
 sig_fire = [p for p in significant_p if p in fire_index]
 sig_nonfire = [p for p in significant_p if p in nonfire_index]
@@ -71,7 +71,7 @@ df_sigp = pd.DataFrame(df_sigp_dict)
 
 ###################### Try 01 - Applying the methods #################################
 k = 1
-num_iter = 10
+num_iter = 1
 
 # Picture it before everything :)
 fire_hist(p_values, fire_index, nonfire_index,title="Histogram of p-values",col1 = 'skyblue', col2 = 'greenyellow')
@@ -100,7 +100,7 @@ for i in range(num_iter):
       min_name = min(indexed_sig_indices, key=lambda x: len(indexed_sig_indices[x]))
       print(f"Min elements are found in {min_name}")
       low_ind = [i for i in range(len(sig_indices)) if len(sig_indices[i]) > 0]
-      valid_indices1 = [i for i in range(len(sig_indices)) if len(sig_indices[i]) > cutoff] 
+      valid_indices1 = [i for i in range(len(sig_indices)) if len(sig_indices[i]) > 1900] 
       valid_indices = [min(valid_indices1) if len(valid_indices1)>0 else min(low_ind)]
       min_index = valid_indices[0]
       min_list = sig_indices[min_index]
@@ -118,7 +118,7 @@ for i in range(num_iter):
 
       len(nonfire_index2)
       len(p_values2)
-      significant_p = min_list
+      significant_p = rejections
 
       sig_fire = [p for p in significant_p if p in fire_index]
       sig_nonfire = [p for p in significant_p if p in nonfire_index]
@@ -156,7 +156,8 @@ for i in range(num_iter):
 
       # Concatenate the p_values_df DataFrame with your existing DataFrame
       df_sigp = pd.concat([df_sigp, p_sig_new], ignore_index=True)
-      df_sigp
+      df_sigp['BY']
+      df_sigp[['Bonferroni','Q-value','SGoF','Power','Total']]
 
       p_values = p_values2
       fire_index = fire_index2

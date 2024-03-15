@@ -70,7 +70,7 @@ p_valuesMPRA = P_MPRA.values.astype(float)
 p_valuesSTARR = P_STARR.values.astype(float)
 
 p_values = p_valuesMPRA
-p_values = p_valuesSTARR
+#p_values = p_valuesSTARR
 
 # Initialize an empty dictionary with empty lists for each column
 df_sigp_dict = {
@@ -86,6 +86,37 @@ df_sigp_dict = {
 df_sigp = pd.DataFrame(df_sigp_dict)
 og_p_values = p_values
 rejections = []
+
+
+############# Apply IHW ###########################
+
+
+len(CRE_ind)
+len(rand_ind)
+
+weightsIHW = []
+for i in range(len(p_values)):
+      if i in CRE_ind:
+           weightsIHW.append(1.025729) 
+      else:
+            weightsIHW.append(0.512865)
+weightsIHW     
+
+
+# Example 02 - Using IHW
+p_values = p_valuesMPRA
+weights = weightsIHW
+
+calculated_weights, calculated_weighted_p_values = weighted_p_list(p_values, weights=weights)
+
+# Print the calculated weights and weighted p-values
+print("Calculated weights:", calculated_weights)
+print("Calculated weighted p-values:", calculated_weighted_p_values)
+
+p_values = calculated_weighted_p_values
+
+
+
 ###################### Try 01 - Applying the methods #################################
 
 #for i in range(num_iter):
@@ -136,10 +167,8 @@ sig_indices = [sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q, ra
 # CRE_ind = list(map(lambda x: x[0], CRE_p))
 # rand_ind =  list(map(lambda x: x[0], Rand_p))
 
-fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random - STARR ",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
-
-
-plot_heatmap(methods, sig_indices, title=f"Significant index plot for STARR p-values")
+fire_hist(p_values, CRE_ind, rand_ind, title="Histogram of CRE and Random - MPRA ",col1 = 'skyblue', col2 = 'purple',left='CRE',right='Random')
+plot_heatmap(methods, sig_indices, title=f"Significant index plot for MPRA p-values")
 
 sig_uncCRE = [p for p in sig_uncorrected if p in CRE_ind]
 sig_uncRand = [p for p in sig_uncorrected if p in rand_ind]
@@ -358,8 +387,8 @@ og_p_values = p_values
 rejections = []
 
 
-k1_list = [0.005]
-k2_list = [1.05, 1.2]
+k1_list = [0.001]
+k2_list = [1.05, 3]
 
 for minw in k1_list:
       for maxw in k2_list:
