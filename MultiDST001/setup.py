@@ -6,7 +6,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         "pandas",
-        "numpy"
+        "numpy",
+        "statmodels",
+        "seaborn"
     ],
     author="Susara Ouchithya",
     description="Multiple Testing made easy!",

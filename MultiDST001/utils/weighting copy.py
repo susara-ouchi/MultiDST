@@ -1,7 +1,8 @@
 #importing dependencies
 import numpy as np
+from common_indices import common_indices
 
-def weighted_p_list(p_values,weights=[],l0=[], l1=[], l2=[], l3=[], l4=[], l5=[], l6=[], max_weight=1.5, min_weight = 0.5):
+def weighted_p_list(p_values,l0=[],l1=[],l2=[],l3=[],l4=[],l5=[],l6=[], weights=None, max_weight=1.5, min_weight = 0.5):
     """
     Generate weighted p-values based on the provided weights.
 
@@ -18,6 +19,7 @@ def weighted_p_list(p_values,weights=[],l0=[], l1=[], l2=[], l3=[], l4=[], l5=[]
 
     # Generate hypothesis weights
     if weights == "multi":
+
         # Optimize weights
         opti_weights = optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, k2=max_weight, k1 = min_weight)
         weights = opti_weights[0]
@@ -41,9 +43,6 @@ def weighted_p_list(p_values,weights=[],l0=[], l1=[], l2=[], l3=[], l4=[], l5=[]
         weighted_p_values = weighted_values_sorted
     
     else:
-        weights = np.array(weights)
-        assert weights.ndim == 1, "Weights must be a 1D array"
-
         # Assert that the length of weight vector is equal to the length of p-values
         assert len(weights) == len(p_values), "Length of weight vector must be equal to length of p-values"
         
@@ -60,7 +59,7 @@ def weighted_p_list(p_values,weights=[],l0=[], l1=[], l2=[], l3=[], l4=[], l5=[]
 
     return weights, weighted_p_values
 
-## Example 01 - Using Multi-Weights
+
 p_values = np.random.random(22)
 
 p_values
@@ -77,15 +76,35 @@ weighting[0]
 weighting[1]
 
 
-# Example 02 - Using IHW
-p_values = [0.1, 0.05, 0.2, 0.3, 0.01]
-weights = [1.5, 0.8, 1.0, 0.5, 1.2]
+import numpy as np
 
-calculated_weights, calculated_weighted_p_values = weighted_p_list(p_values, weights=weights)
+def calculate_weighted_p_values(p_values, weights):
+    # Assert that the length of weight vector is equal to the length of p-values
+    assert len(weights) == len(p_values), "Length of weight vector must be equal to length of p-values"
+    
+    # Initialize a list to store the weighted p-values
+    weighted_p_values = []
 
-# Print the calculated weights and weighted p-values
-print("Calculated weights:", calculated_weights)
-print("Calculated weighted p-values:", calculated_weighted_p_values)
+    # Multiply each p-value with its corresponding weight
+    for i, p_value in enumerate(p_values):
+        weighted_p_value = p_value * weights[i]
+        # Ensure that the weighted p-value does not exceed 1.0
+        if weighted_p_value > 1.0:
+            weighted_p_value = 1.0
+        weighted_p_values.append(weighted_p_value)
+    
+    return weighted_p_values
+
+# Example usage:
+p_values = [0.05, 0.01, 0.2, 0.3]
+weights = [0.2, 0.5, 0.1, 0.2]
+
+# Calculate weighted p-values
+weighted_p_values = calculate_weighted_p_values(p_values, weights)
+print("Weighted p-values:", weighted_p_values)
+
+# Check if weights sum up to the length of p-values
+#assert sum(weights) == len(p_values), "Weights must sum up to the length of p-values"
 
 
 ########################################### Optimal Weights using Multi weighting ########################################3
@@ -100,7 +119,6 @@ def optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, k2=1.5, k1=0.5):
     assert len(p_values) == len(l0) + len(l1) + len(l2) + len(l3) + len(l4) + len(l5) + len(l6), "Length of p_values should be equal to the sum of lengths of l0 to l6"
 
     # Define the objective function to be minimized
-    
     def objective_function(w):
         return sum(w[i] * p_values[i] for i in range(len(w)))
     
@@ -181,7 +199,88 @@ def optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6, k2=1.5, k1=0.5):
     return optimal_weights, weighted_list, optimal_weights1
 
 
-### Using on a real dataset
+
+# Define p_values and lists l0 to l6
+p_values = np.random.random(14)
+l0 = [0, 1]
+l1 = [2, 3, 4]
+l2 = [5]
+l3 = [6, 7]
+l4 = [8, 9]
+l5 = [10, 11, 12]
+l6 = [13]
+
+# Call the optimize_weights function
+optimal_weights, weighted_list, optiw = optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6)
+
+# Print the results
+print("Optimal Weights:", optimal_weights)
+print("Weighted List:", weighted_list)
+
+
+
+
+
+# Example usage:
+p_values = np.random.random(21)  # Example p_values
+l0 = [1, 2, 3]  # Example list l0
+l1 = [4, 5, 6]  # Example list l1
+l2 = [7, 8, 9]  # Example list l2
+l3 = [10, 11, 12]  # Example list l3
+l4 = [13, 14, 15]  # Example list l4
+l5 = [16,17,18]  # Example list l5
+l6 = [19,20,0]  # Example list l6
+
+# Optimize weights and get the weighted list
+weighted_list = optimize_weights(p_values, l0, l1, l2, l3, l4, l5, l6)[0]
+
+# Print the weighted list
+print("Weighted list:", weighted_list)
+
+
+# Set the seed
+import random
+
+random.seed(42)
+p_values = [random.random() for _ in range(21)]
+print(p_values)
+  # Example p_values
+l0 = [1, 2, 3]  # Example list l0
+l1 = [4, 5, 6]  # Example list l1
+l2 = [7, 8, 9]  # Example list l2
+l3 = [10, 11, 12]  # Example list l3
+l4 = [13, 14, 15]  # Example list l4
+l5 = [16,17,18]  # Example list l5
+l6 = [19,20]  # Example list l6
+
+[p_values[index] for i, sublist in enumerate([l0, l1, l2, l3, l4, l5, l6]) for index in sublist]
+
+# p_values_selected = [p_values[index] for sublist in [l0, l1, l2, l3, l4, l5, l6] for index in sublist]
+[weighted_list[0][i] * p_values[index] for i, sublist in enumerate([l0, l1, l2, l3, l4, l5, l6]) for index in sublist]
+
+weighted_list[0][1]*p_values[1]
+
+
+
+# Intuition
+
+p_values = [i+1 for i in range(14)]
+print(p_values)
+  # Example p_values
+l0 = [0]  # Example list l0
+l1 = [1]  # Example list l1
+l2 = [2,13]  # Example list l2
+l3 = [3]  # Example list l3
+l4 = [4,11,12]  # Example list l4
+l5 = [5]  # Example list l5
+l6 = [6,7,8,9,10]  # Example list l6
+
+[weighted_list[0][i]*p_values[index] for i, sublist in enumerate([l0, l1, l2, l3, l4, l5, l6]) for index in sublist]
+[weighted_list[0][i] * p_values[index] for i, sublist in enumerate([l0, l1, l2, l3, l4, l5, l6]) for index in sublist]
+weighted_list[0]
+
+
+
 
 
 import pandas as pd
