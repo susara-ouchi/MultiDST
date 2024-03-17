@@ -36,7 +36,12 @@ import pandas as pd
 
 
 
-def multi_DST(p_values, alpha=0.05, weights=False):
+def multi_DST(p_values, alpha=0.05, weights=None):
+    """
+    Conducts all 06 multiple testing methods to return significant indices under each method.
+    Input: list of p-values, threshold, weights (list)
+    Return:Dict of sig indices and q-value estimate by Storey's method
+    """
     # 0 - Uncorrected
     sig_index = [index for index, p in enumerate(p_values) if p < alpha]
     uncorrected_count = len(sig_index)

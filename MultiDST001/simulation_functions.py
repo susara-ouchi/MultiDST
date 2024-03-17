@@ -24,9 +24,8 @@ import random
 
 def simulation_01(seed,num_firing,num_nonfire,effect=0.5,n0=30,n1=30,threshold=0.05,show_plot=False,s0=1,s1=1):
     '''
-    This is to create p-values from t-distribution & uniform distribution
+    This is to create p-values from Welch's t-distribution 
     '''
-    ############################### Simulating t-test (independent samples) ########################################3
     np.random.seed(seed)
     #Control Group Distribution
     m0 = 0
