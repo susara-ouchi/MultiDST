@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: MultiDST001
+Version: 0.0.1
+Summary: Multiple Testing made easy!
+Author: Susara Ouchithya
+Description-Content-Type: text/markdown
+Requires-Dist: pandas
+Requires-Dist: numpy

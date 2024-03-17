@@ -1,0 +1,3 @@
+Set-ExecutionPolicy RemoteSigned -Scope Process
+
+multidst-venv\scripts\activate

@@ -1,7 +1,6 @@
 def draw_histogram(data, bins=10, color='skyblue', edgecolor='black', title='Histogram', xlabel='Values', ylabel='Frequency'):
     import matplotlib.pyplot as plt
     import numpy as np
-
     """
     Draw a histogram using user-defined function.
 
@@ -189,9 +188,9 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
         plt.plot(effect_sizes, powers_s0[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
     plt.xlabel(x_labels[0] if x_labels else 'Effect Size', fontname='Times New Roman')
     plt.ylabel(y_labels[0] if y_labels else 'Power', fontname='Times New Roman')
-    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman',fontsize=15)
+    plt.title(titles[0] if titles else 'Power vs. Effect Size (S0 = 0.5)', fontname='Times New Roman',fontsize=16)
     plt.ylim(0, 1.0)  # Set y-axis limits
-    plt.legend(loc='upper left', prop={'family': 'Times New Roman'}, fontsize=16)
+    plt.legend(loc='upper left', prop={'family': 'Times New Roman'})
     plt.grid(True)
 
     # Plot for S = 1.0 / n = 15
@@ -200,7 +199,7 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
         plt.plot(effect_sizes, powers_s1[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
     plt.xlabel(x_labels[1] if x_labels else 'Effect Size', fontname='Times New Roman')
     plt.ylabel(y_labels[1] if y_labels else 'Power', fontname='Times New Roman')
-    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman',fontsize=15)
+    plt.title(titles[1] if titles else 'Power vs. Effect Size (S1 = 1.0)', fontname='Times New Roman',fontsize=16)
     plt.ylim(0, 1.0)  # Set y-axis limits
     #plt.legend(loc='upper right', prop={'family': 'Times New Roman'})
     plt.grid(True)
@@ -212,7 +211,7 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
             plt.plot(effect_sizes, powers_s2[i], label=methods[i], color=colors[i % len(colors)], marker=markers[i % len(markers)])
         plt.xlabel(x_labels[2] if x_labels else 'Effect Size', fontname='Times New Roman')
         plt.ylabel(y_labels[2] if y_labels else 'Power', fontname='Times New Roman')
-        plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman',fontsize=15)
+        plt.title(titles[2] if titles else 'Power vs. Effect Size (S2 = 1.5)', fontname='Times New Roman',fontsize=16)
         plt.ylim(0, 1.0)  # Set y-axis limits
         plt.grid(True)
 
@@ -223,8 +222,7 @@ def plot_power_effect(methods, effect_sizes, powers_s0, powers_s1, powers_s2=Non
 
 
 # Example data for effect sizes and powers for 7 different methods
-methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
-
+methods = ['Method 1', 'Method 2', 'Method 3', 'Method 4', 'Method 5', 'Method 6', 'Method 7']
 effect_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
 powers_s0 = [[0.2, 0.4, 0.6, 0.8, 1.0], [0.3, 0.5, 0.7, 0.85, 0.95], [0.1, 0.3, 0.5, 0.75, 0.9],
              [0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0],[0.2, 0.4, 0.6, 0.8, 1.0]]
@@ -251,82 +249,3 @@ titles =['Custom Title 1', 'Custom Title 2', 'Custom Title 3']
 plot_power_effect(methods, effect_sizes, powers_n0, powers_n1, powers_n2, titles=titles)
 
 ###############################################################################################################
-
-### HEATMAP 
-
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# Sample data generation
-methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
-parameters = ['Sample Size', 'Standard Deviation', 'Effect Size']
-num_parameters = len(parameters)
-num_methods = len(methods)
-data = np.random.rand(num_parameters, num_methods)  # Example matrix of random power values
-
-# Create heatmap
-sns.heatmap(data, cmap='viridis', annot=True, fmt=".2f")
-
-# Customize labels and title
-plt.xlabel('Methods')
-plt.ylabel('Parameters')
-plt.title('Comparison of Power Values across Methods')
-
-# Set x-axis tick labels
-plt.xticks(ticks=np.arange(num_methods) + 0.5, labels=methods)
-
-# Set y-axis tick labels
-plt.yticks(ticks=np.arange(num_parameters) + 0.5, labels=parameters, rotation=0)
-
-# Show plot
-plt.show()
-
-
-######################################################################################################
-
-## RADAR
-import numpy as np
-import matplotlib.pyplot as plt
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-def plot_radar_plots(methods, criteria, title, scores1, scores2):
-    # Create radar plots for two sets of scores
-    fig, axs = plt.subplots(1, 2, figsize=(14, 5), subplot_kw=dict(polar=True))
-
-    for ax, scores, n in zip(axs, [scores1, scores2], [r'$n = 5$', r'$n = 15$']):
-        angles = np.linspace(0, 2 * np.pi, len(criteria), endpoint=False).tolist()
-
-        # Normalize scores for each criterion
-        scores_norm = scores / np.max(scores, axis=0)
-
-        # Add the first criterion to complete the loop
-        scores_norm = np.concatenate((scores_norm, scores_norm[:,[0]]), axis=1)
-        angles += angles[:1]
-
-        for i, method in enumerate(methods):
-            ax.plot(angles, scores_norm[i], label=method, marker=".")
-        
-        ax.fill(angles, np.mean(scores_norm, axis=0), color='black', alpha=0.1)
-        ax.set_yticklabels([])
-        ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(criteria, fontname='Times New Roman')
-        ax.set_title(f'{n}', fontname='Times New Roman')
-        
-    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1), prop={'family': 'Times New Roman'})
-
-    plt.tight_layout()
-    plt.show()
-
-# Example usage:
-methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Storey Q']
-criteria = ['Power\n(TPR)', 'Specificity\n(TNR)', 'Precision\n(1-FDR)', 'Accuracy', 'F1 score']
-title = 'Comparison of Methods based on Criteria'
-
-# Example data
-scores_n5 = np.random.rand(len(methods), len(criteria))
-scores_n15 = np.random.rand(len(methods), len(criteria))
-
-plot_radar_plots(methods, criteria, title, scores_n5, scores_n15)

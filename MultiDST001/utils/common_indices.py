@@ -1,13 +1,35 @@
 from collections import Counter
-
-from collections import Counter
 from scipy.optimize import minimize
 
-
-from collections import Counter
-
 def common_indices(p_values, sig_bonf_p, sig_holm_p, sig_sgof_p, sig_bh_p, sig_by_p, sig_q):
-    # Combine all indices into a single list
+    """
+    Determine common indices among multiple lists of significant p-values.
+
+    Args:
+    - p_values (list): A list of p-values.
+    - sig_bonf_p (list): A list of indices of p-values significant after Bonferroni correction.
+    - sig_holm_p (list): A list of indices of p-values significant after Holm-Bonferroni correction.
+    - sig_sgof_p (list): A list of indices of p-values significant after SGoF test.
+    - sig_bh_p (list): A list of indices of p-values significant after Benjamini-Hochberg procedure.
+    - sig_by_p (list): A list of indices of p-values significant after Benjamini-Yekutieli method.
+    - sig_q (list): A list of indices of p-values significant after Storey’s Q value method.
+
+    Returns:
+    - l0_list (list): Indices not present in any of the significant lists.
+    - l1_list (list): Indices present in exactly one significant list.
+    - l2_list (list): Indices present in exactly two significant lists.
+    - l3_list (list): Indices present in exactly three significant lists.
+    - l4_list (list): Indices present in exactly four significant lists.
+    - l5_list (list): Indices present in exactly five significant lists.
+    - l6_list (list): Indices present in all six significant lists.
+    - index_dict (dict): Dictionary containing lists of indices grouped by their presence in significant lists.
+
+    This function takes in lists of significant p-values for various methods of hypothesis testing and
+    determines the common indices among them. It categorizes the indices based on their occurrence in
+    different numbers of significant lists, from 0 to 6. It also returns a dictionary containing lists
+    of indices grouped by their presence in significant lists.
+
+    """
     all_indices = sig_bonf_p + sig_holm_p + sig_sgof_p + sig_bh_p + sig_by_p + sig_q
     p_values_ind = [i for i in range(len(p_values))]
 
